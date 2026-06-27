@@ -1,0 +1,169 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:#0f1117;
+    color:white;
+    min-height:100vh;
+}
+
+/* HEADER */
+
+.header{
+    width:100%;
+    padding:20px 40px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#171a23;
+    border-bottom:1px solid rgba(255,255,255,.1);
+}
+
+.logo{
+    font-size:28px;
+    font-weight:bold;
+    color:#9d7dff;
+}
+
+.back-btn{
+    text-decoration:none;
+    color:white;
+    background:#7c3aed;
+    padding:10px 20px;
+    border-radius:10px;
+    transition:.3s;
+}
+
+.back-btn:hover{
+    transform:translateY(-2px);
+}
+
+/* TITLE */
+
+.title{
+    text-align:center;
+    margin-top:40px;
+}
+
+.title h1{
+    font-size:42px;
+}
+
+.title p{
+    color:#aaa;
+    margin-top:10px;
+}
+
+/* STATUS */
+
+.status{
+    width:90%;
+    max-width:1200px;
+    margin:20px auto;
+    background:#171a23;
+    padding:20px;
+    border-radius:15px;
+    text-align:center;
+}
+
+.status h3{
+    color:#69ff8f;
+}
+
+/* GRID */
+
+.stock-container{
+    width:90%;
+    max-width:1300px;
+    margin:40px auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:25px;
+}
+
+/* CARD */
+
+.pet-card{
+    background:#1b1f2a;
+    border-radius:20px;
+    padding:25px;
+    text-align:center;
+    transition:.3s;
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.pet-card:hover{
+    transform:translateY(-8px);
+}
+
+.pet-card img{
+    width:130px;
+    height:130px;
+    object-fit:contain;
+}
+
+.pet-name{
+    font-size:24px;
+    margin-top:15px;
+    font-weight:bold;
+}
+
+.pet-stock{
+    margin-top:15px;
+    font-size:18px;
+    color:#69ff8f;
+}
+
+.pet-price{
+    margin-top:10px;
+    font-size:22px;
+    color:#ffd166;
+    font-weight:bold;
+}
+
+.buy-btn{
+    margin-top:20px;
+    border:none;
+    background:#7c3aed;
+    color:white;
+    padding:12px 24px;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:.3s;
+}
+
+.buy-btn:hover{
+    background:#9155ff;
+}
+
+/* FOOTER */
+
+.footer{
+    text-align:center;
+    padding:40px;
+    color:#777;
+}
+/* RESPONSIVO */
+@media(max-width:600px){
+    .header{
+        padding:15px 20px;
+    }
+
+    .logo{
+        font-size:20px;
+    }
+
+    .title h1{
+        font-size:26px;
+    }
+
+    .stock-container{
+        width:94%;
+        gap:15px;
+    }
+}

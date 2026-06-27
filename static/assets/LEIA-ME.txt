@@ -1,0 +1,18 @@
+Esta pasta deve conter as imagens usadas pelo site:
+
+- fundo.png          -> imagem de fundo da Index.html e Carrinho.html
+- logo.png           -> logo no canto superior esquerdo
+- Unicórnio.png, Dragonfly.png, Raccon.png  -> ícones de pets na home
+- carrot.png, crystal.png, apple.png         -> ícones de seeds na home
+- SUPER_WATERING.png, SUPER_SPRINKLER.png    -> ícones de gears na home
+- sla.png            -> ícone de trades na home (placeholder, troque pelo que quiser)
+- pet1.png, pet2.png, pet3.png               -> imagens dos pets de exemplo no banco
+- carrot.png, apple.png, crystal.png         -> imagens das seeds de exemplo no banco
+- gear1.png, gear2.png, gear3.png            -> imagens dos gears de exemplo no banco
+
+Essas imagens NÃO foram enviadas junto com os arquivos do site, então o
+servidor vai funcionar normalmente, mas os <img> vão aparecer quebrados/vazios
+até você colocar os arquivos reais aqui dentro (mesmo nome, mesma extensão).
+
+Quando você adicionar/editar itens pelo Painel Admin, o campo "Imagem" espera
+um caminho relativo a essa pasta, por exemplo: assets/meu_item.png

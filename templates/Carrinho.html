@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrinho - MYU Store</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_carrinho.css') }}">
+</head>
+<body>
+
+    <!-- FUNDO -->
+    <img src="{{ url_for('static', filename='assets/fundo.png') }}" class="fundo" alt="Fundo">
+
+    <!-- CABEÇALHO -->
+    <header class="top-bar">
+        <h1>🛒 MYU STORE</h1>
+        <p>Seu carrinho de compras</p>
+    </header>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div style="max-width:600px;margin:0 auto 20px;text-align:center;color:#9dff00;">
+          {% for msg in messages %}<p>{{ msg }}</p>{% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- CONTEÚDO -->
+    <main class="cart-container">
+
+        <!-- ITENS -->
+        <section class="cart-card">
+
+            <div class="cart-header">
+                <h2>Itens no Carrinho</h2>
+                <span id="quantidade-itens">{{ quantidade_itens }} item{{ 's' if quantidade_itens != 1 else '' }}</span>
+            </div>
+
+            <div id="carrinho-itens">
+
+                {% for item in itens %}
+                <div class="cart-item" style="margin-bottom:15px;">
+                    {% if item.imagem %}
+                    <img src="{{ url_for('static', filename=item.imagem) }}" alt="{{ item.nome }}" onerror="this.style.display='none'">
+                    {% endif %}
+
+                    <div class="item-info">
+                        <h3>{{ item.nome }}</h3>
+                        <p>Quantidade: {{ item.quantidade }} · {{ item.categoria }}</p>
+                        <p class="item-price">R$ {{ "%.2f"|format(item.subtotal) }}</p>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('carrinho_remover', carrinho_item_id=item.carrinho_item_id) }}">
+                        <button type="submit" class="remove-btn">✕</button>
+                    </form>
+                </div>
+                {% else %}
+                <div class="cart-item">
+                    <div class="item-info">
+                        <h3>Seu carrinho está vazio</h3>
+                        <p>Adicione produtos para começar sua compra.</p>
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+        <!-- RESUMO -->
+        <aside class="summary-card">
+
+            <h2>Resumo do Pedido</h2>
+
+            <div class="summary-line">
+                <span>Subtotal</span>
+                <span id="subtotal">R$ {{ "%.2f"|format(total) }}</span>
+            </div>
+
+            <div class="summary-line total">
+                <span>Total</span>
+                <span id="total">R$ {{ "%.2f"|format(total) }}</span>
+            </div>
+
+            <form method="POST" action="{{ url_for('carrinho_finalizar') }}">
+                <button type="submit" class="checkout-btn" {{ 'disabled' if quantidade_itens == 0 else '' }}>
+                    💳 Finalizar Compra
+                </button>
+            </form>
+
+            <button class="continue-btn"
+                    onclick="window.location.href='{{ url_for('index') }}'">
+                ← Continuar Comprando
+            </button>
+
+        </aside>
+
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer class="footer">
+        <p>© 2026 MYU Store - Todos os direitos reservados.</p>
+    </footer>
+
+</body>
+</html>

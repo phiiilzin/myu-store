@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avaliações - MYU Store</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/Avaliacoes.css') }}">
+</head>
+
+<body>
+
+<header class="header">
+    <div class="logo">🌱 MYU STORE</div>
+    <a href="{{ url_for('index') }}" class="back-btn">Voltar</a>
+</header>
+
+<section class="title">
+    <h1>Avaliações</h1>
+</section>
+
+<div class="resumo">
+    {% if total_avaliacoes > 0 %}
+    <div class="nota-grande">{{ media_nota }}</div>
+    <div class="estrelas">{{ "★" * (media_nota|round(0, 'floor')|int) }}{{ "☆" * (5 - (media_nota|round(0, 'floor')|int)) }}</div>
+    <div class="total">{{ total_avaliacoes }} avaliação{{ "ões" if total_avaliacoes != 1 else "" }}</div>
+    {% else %}
+    <p style="color:#888;">Ainda não há avaliações.</p>
+    {% endif %}
+</div>
+
+<div class="lista">
+    {% for av in avaliacoes %}
+    <div class="avaliacao-card">
+        <div class="estrelas">{{ "★" * av['nota'] }}{{ "☆" * (5 - av['nota']) }}</div>
+        {% if av['comentario'] %}
+        <div class="comentario">"{{ av['comentario'] }}"</div>
+        {% endif %}
+        <div class="data">Pedido #{{ av['pedido_id'] }} · {{ av['criado_em'] }}</div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        Nenhuma avaliação ainda. Avaliações aparecem aqui depois que clientes finalizam<br>
+        uma compra e avaliam o pedido pelo chat.
+    </div>
+    {% endfor %}
+</div>
+
+<footer class="footer">© 2026 MYU Store - Grow a Garden</footer>
+
+</body>
+</html>

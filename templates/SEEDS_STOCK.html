@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MYU Store - Seeds Stock</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/SEEDS_STOCK.css') }}">
+</head>
+
+<body>
+
+<header class="header">
+    <div class="logo">🌱 MYU STORE</div>
+
+    <a href="{{ url_for('index') }}" class="back-btn">
+        Voltar
+    </a>
+</header>
+
+<section class="title">
+    <h1>SEEDS STOCK</h1>
+    <p>Confira as sementes disponíveis atualmente.</p>
+</section>
+
+<div class="status">
+    <h3>🟢 Estoque Atualizado</h3>
+    <p>Os administradores podem atualizar os valores a qualquer momento.</p>
+</div>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="status" style="border:1px solid #56ff56;">
+      {% for msg in messages %}<p>{{ msg }}</p>{% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<section class="stock-container">
+
+    {% for seed in seeds %}
+    <div class="seed-card">
+        {% if seed['emoji'] %}
+        <div style="font-size:80px;line-height:1;">{{ seed['emoji'] }}</div>
+        {% elif seed['imagem'] %}
+        <img src="{{ url_for('static', filename=seed['imagem']) }}" onerror="this.style.display='none'">
+        {% endif %}
+        <div class="seed-name">{{ seed['nome'] }}</div>
+        <div class="seed-stock">Stock: {{ seed['stock'] }}</div>
+        <div class="seed-price">R$ {{ "%.2f"|format(seed['preco']) }}</div>
+
+        {% if seed['stock'] > 0 %}
+        <form method="POST" action="{{ url_for('carrinho_adicionar') }}">
+            <input type="hidden" name="categoria" value="seeds">
+            <input type="hidden" name="item_id" value="{{ seed['id'] }}">
+            <input type="hidden" name="quantidade" value="1">
+            <button type="submit" class="buy-btn">Comprar</button>
+        </form>
+        {% else %}
+        <button class="buy-btn" disabled style="opacity:.5;cursor:not-allowed;">Esgotado</button>
+        {% endif %}
+    </div>
+    {% else %}
+    <p style="text-align:center;color:#888;">Nenhuma seed em stock no momento.</p>
+    {% endfor %}
+
+</section>
+
+<footer class="footer">
+    © 2026 MYU Store - Grow a Garden
+</footer>
+
+</body>
+</html>

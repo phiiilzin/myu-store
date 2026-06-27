@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MYU Store - Gears Stock</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/GEARS_STOCK.css') }}">
+</head>
+
+<body>
+
+<header class="header">
+    <div class="logo">⚙️ MYU STORE</div>
+
+    <a href="{{ url_for('index') }}" class="back-btn">
+        Voltar
+    </a>
+</header>
+
+<section class="title">
+    <h1>GEARS STOCK</h1>
+    <p>Confira os gears disponíveis atualmente.</p>
+</section>
+
+<div class="status">
+    <h3>🟢 Estoque Atualizado</h3>
+    <p>Os administradores podem atualizar os valores a qualquer momento.</p>
+</div>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="status" style="border:1px solid #4db8ff;">
+      {% for msg in messages %}<p>{{ msg }}</p>{% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<section class="stock-container">
+
+    {% for gear in gears %}
+    <div class="gear-card">
+        {% if gear['emoji'] %}
+        <div style="font-size:80px;line-height:1;">{{ gear['emoji'] }}</div>
+        {% elif gear['imagem'] %}
+        <img src="{{ url_for('static', filename=gear['imagem']) }}" onerror="this.style.display='none'">
+        {% endif %}
+        <div class="gear-name">{{ gear['nome'] }}</div>
+        <div class="gear-stock">Stock: {{ gear['stock'] }}</div>
+        <div class="gear-price">R$ {{ "%.2f"|format(gear['preco']) }}</div>
+
+        {% if gear['stock'] > 0 %}
+        <form method="POST" action="{{ url_for('carrinho_adicionar') }}">
+            <input type="hidden" name="categoria" value="gears">
+            <input type="hidden" name="item_id" value="{{ gear['id'] }}">
+            <input type="hidden" name="quantidade" value="1">
+            <button type="submit" class="buy-btn">Comprar</button>
+        </form>
+        {% else %}
+        <button class="buy-btn" disabled style="opacity:.5;cursor:not-allowed;">Esgotado</button>
+        {% endif %}
+    </div>
+    {% else %}
+    <p style="text-align:center;color:#888;">Nenhum gear em stock no momento.</p>
+    {% endfor %}
+
+</section>
+
+<footer class="footer">
+    © 2026 MYU Store - Grow a Garden
+</footer>
+
+</body>
+</html>

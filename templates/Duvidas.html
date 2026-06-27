@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dúvidas - MYU Store</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/SobreNos.css') }}">
+</head>
+
+<body>
+
+<header class="header">
+    <div class="logo">🌱 MYU STORE</div>
+    <a href="{{ url_for('index') }}" class="back-btn">Voltar</a>
+</header>
+
+<section class="title">
+    <h1>Dúvidas Frequentes</h1>
+</section>
+
+<div class="content-card">{{ texto }}</div>
+
+<footer class="footer">© 2026 MYU Store - Grow a Garden</footer>
+
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYU Store - Melhor loja de Grow a Garden!</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Style.css') }}">
+    <style>
+        .ofertas-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+            gap:25px;
+        }
+        .oferta-card{
+            background:#1b1f2a;
+            border-radius:20px;
+            padding:25px;
+            text-align:center;
+            transition:.3s;
+            border:1px solid rgba(255,209,102,.25);
+        }
+        .oferta-card:hover{
+            transform:translateY(-8px);
+        }
+        .oferta-card img{
+            width:120px;
+            height:120px;
+            object-fit:contain;
+        }
+        .oferta-card .nome{
+            font-size:22px;
+            margin-top:15px;
+            font-weight:bold;
+            color:white;
+        }
+        .oferta-card .stock-info{
+            margin-top:10px;
+            font-size:15px;
+            color:#9d7dff;
+        }
+        .oferta-card .preco-original{
+            text-decoration:line-through;
+            color:#888;
+            font-size:14px;
+            margin-top:8px;
+        }
+        .oferta-card .preco-promo{
+            font-size:24px;
+            font-weight:bold;
+            color:#ffd166;
+            margin-top:4px;
+        }
+        .oferta-card .buy-btn{
+            margin-top:16px;
+            width:100%;
+            border:none;
+            padding:12px;
+            border-radius:10px;
+            cursor:pointer;
+            font-weight:bold;
+            font-size:14px;
+            background:#ffd166;
+            color:#1a1208;
+            transition:.25s;
+        }
+        .oferta-card .buy-btn:hover{
+            transform:translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MENU -->
+    <header class="navbar">
+
+        <nav>
+            <ul class="menu">
+                <li><a href="{{ url_for('duvidas') }}">Dúvidas</a></li>
+                <li><a href="{{ url_for('trades_lista') }}">Trades</a></li>
+                <li><a href="{{ url_for('sobre_nos') }}">Sobre Nós</a></li>
+                <li><a href="{{ url_for('avaliacoes_lista') }}">Avaliações</a></li>
+                <li><a href="{{ url_for('suporte') }}">Suporte</a></li>
+                <li><a href="https://discord.gg/rjrM2FtwF">Discord</a></li>
+            </ul>
+        </nav>
+
+        <div class="actions">
+            <button class="cart" onclick="window.location.href='{{ url_for('carrinho') }}'">
+                🛒 Carrinho
+            </button>
+
+            {% if session.get('usuario') %}
+            <button class="login" onclick="window.location.href='{{ url_for('painel_adm') }}'">
+                ⚙️ Painel ({{ session['usuario'] }})
+            </button>
+            {% else %}
+            <button class="login" onclick="window.location.href='{{ url_for('login') }}'">
+                👤 Entrar
+            </button>
+            {% endif %}
+        </div>
+
+    </header>
+
+    <img src="{{ url_for('static', filename='assets/fundo.png') }}" class="fundo">
+    <img src="{{ url_for('static', filename='assets/logo.png') }}" class="logo">
+
+    <!-- BANNER -->
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <h2>BEM-VINDO À</h2>
+
+            <h1>
+                MYU <span>STORE</span>
+            </h1>
+
+            <p>
+                Os melhores Pets, Seeds, Gears e itens raros em um só lugar!
+            </p>
+
+            <button class="buy-btn" onclick="window.location.href='{{ url_for('stock_unificado') }}'">
+                🛒 COMPRAR AGORA
+            </button>
+
+            <div class="info-boxes">
+
+                <div class="info">
+                    ⚡
+                    <div>
+                        <strong>ENTREGA RÁPIDA</strong>
+                        <p>Automática e instantânea</p>
+                    </div>
+                </div>
+
+                <div class="info">
+                    🛡️
+                    <div>
+                        <strong>100% SEGURO</strong>
+                        <p>Compras protegidas</p>
+                    </div>
+                </div>
+
+                <div class="info">
+                    👥
+                    <div>
+                        <strong>+10.000 CLIENTES</strong>
+                        <p>Confiança e qualidade</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- OFERTAS DO DIA: um card individual para cada oferta -->
+    <section style="width:90%;max-width:1300px;margin:50px auto;">
+        <h2 style="text-align:center;color:#ffd166;font-size:32px;margin-bottom:30px;">🔥 Ofertas do Dia</h2>
+
+        {% if ofertas %}
+        <div class="ofertas-grid">
+            {% for oferta in ofertas %}
+            <div class="oferta-card">
+                {% if oferta.emoji %}
+                <div style="font-size:64px;line-height:1;margin-bottom:5px;">{{ oferta.emoji }}</div>
+                {% elif oferta.imagem %}
+                <img src="{{ url_for('static', filename=oferta.imagem) }}" onerror="this.style.display='none'">
+                {% endif %}
+                <div class="nome">{{ oferta.nome }}</div>
+                <div class="stock-info">Stock: {{ oferta.stock }}</div>
+                <div class="preco-original">R$ {{ "%.2f"|format(oferta.preco_original) }}</div>
+                <div class="preco-promo">R$ {{ "%.2f"|format(oferta.preco_promocional) }}</div>
+
+                {% if oferta.stock > 0 %}
+                <form method="POST" action="{{ url_for('carrinho_adicionar') }}">
+                    <input type="hidden" name="categoria" value="{{ oferta.categoria }}">
+                    <input type="hidden" name="item_id" value="{{ oferta.item_id }}">
+                    <input type="hidden" name="quantidade" value="1">
+                    <button type="submit" class="buy-btn">Comprar</button>
+                </form>
+                {% else %}
+                <button class="buy-btn" disabled style="opacity:.5;cursor:not-allowed;">Esgotado</button>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="text-align:center;color:#888;">Nenhuma oferta no momento. Volte em breve!</p>
+        {% endif %}
+    </section>
+
+</body>
+</html>

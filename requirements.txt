@@ -1,0 +1,7 @@
+Flask>=3.0,<4.0
+Werkzeug>=3.0,<4.0
+
+# Opcional — só necessário se você for ativar notificações push (ver README.md,
+# seção "Notificações push"). Sem essa biblioteca instalada, o site funciona
+# normalmente, só sem enviar notificações.
+# firebase-admin>=6.5,<7.0

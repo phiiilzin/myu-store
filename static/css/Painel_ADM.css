@@ -1,0 +1,195 @@
+/* RESET */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI', sans-serif;
+}
+
+/* FUNDO */
+body{
+    min-height:100vh;
+    background:linear-gradient(135deg,#0f0f0f,#1a1a1a);
+    color:white;
+}
+
+/* HEADER */
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:20px 40px;
+
+    background:rgba(20,20,20,.95);
+    border-bottom:1px solid rgba(157,255,0,.2);
+
+    box-shadow:0 0 20px rgba(157,255,0,.1);
+}
+
+.header h1{
+    font-size:28px;
+    font-weight:900;
+    color:#9dff00;
+    text-shadow:0 0 12px rgba(157,255,0,.4);
+}
+
+/* BOTÃO SAIR */
+.logout{
+    padding:10px 18px;
+    border-radius:10px;
+
+    background:#ff2b2b;
+    color:white;
+
+    text-decoration:none;
+    font-weight:bold;
+
+    transition:.3s;
+}
+
+.logout:hover{
+    background:#ff0000;
+    transform:translateY(-2px);
+}
+
+.user-box{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+/* CONTAINER */
+.container{
+    display:flex;
+    flex-direction:column;
+    gap:25px;
+
+    padding:30px;
+    max-width:1200px;
+    margin:auto;
+}
+
+/* SECTIONS */
+.section{
+    background:rgba(20,20,20,.95);
+    border:1px solid rgba(157,255,0,.15);
+    border-radius:20px;
+
+    padding:25px;
+
+    box-shadow:0 0 25px rgba(157,255,0,.08);
+}
+
+.section h2{
+    margin-bottom:20px;
+    color:#9dff00;
+    font-size:22px;
+}
+
+/* GRID INPUTS */
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+
+    margin-bottom:15px;
+}
+
+/* INPUTS */
+.form-grid input{
+    height:45px;
+
+    border-radius:10px;
+    border:1px solid #333;
+
+    background:#252525;
+    color:white;
+
+    padding:0 10px;
+
+    outline:none;
+    transition:.3s;
+}
+
+.form-grid input:focus{
+    border-color:#9dff00;
+    box-shadow:0 0 10px rgba(157,255,0,.25);
+}
+
+/* BOTÃO */
+button{
+    width:200px;
+    height:45px;
+
+    border:none;
+    border-radius:10px;
+
+    background:linear-gradient(180deg,#9dff00,#53c400);
+    color:black;
+
+    font-weight:900;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 0 20px rgba(157,255,0,.25);
+}
+
+/* RESPONSIVO */
+@media(max-width:1000px){
+    .form-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:600px){
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .header{
+        flex-direction:column;
+        gap:10px;
+        text-align:center;
+        padding:18px 20px;
+    }
+
+    .header h1{
+        font-size:22px;
+    }
+
+    button{
+        width:100%;
+    }
+
+    .container{
+        padding:15px;
+        gap:18px;
+    }
+
+    .section{
+        padding:18px;
+    }
+
+    .section h2{
+        font-size:18px;
+    }
+
+    /* Tabelas dentro do painel viram roláveis horizontalmente em vez de
+       espremer as colunas até ficar ilegível. */
+    .section table{
+        display:block;
+        overflow-x:auto;
+        white-space:nowrap;
+    }
+
+    .section table tr{
+        display:table-row;
+    }
+}

@@ -1,0 +1,217 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI', sans-serif;
+}
+
+body{
+    background:#0f1117;
+    color:white;
+    min-height:100vh;
+}
+
+.header{
+    width:100%;
+    padding:20px 40px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#171a23;
+    border-bottom:1px solid rgba(255,255,255,.1);
+}
+
+.logo{
+    font-size:28px;
+    font-weight:bold;
+    color:#9d7dff;
+}
+
+.back-btn{
+    text-decoration:none;
+    color:white;
+    background:#7c3aed;
+    padding:10px 20px;
+    border-radius:10px;
+    transition:.3s;
+}
+
+.back-btn:hover{
+    transform:translateY(-2px);
+}
+
+.title{
+    text-align:center;
+    margin:40px 20px 20px;
+}
+
+.title h1{
+    font-size:38px;
+    color:#9d7dff;
+}
+
+.title p{
+    color:#aaa;
+    margin-top:10px;
+}
+
+/* ABAS */
+
+.tabs{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    margin:30px auto;
+    flex-wrap:wrap;
+    padding:0 20px;
+}
+
+.tab-btn{
+    border:1px solid rgba(255,255,255,.12);
+    background:#171a23;
+    color:#ccc;
+    padding:12px 26px;
+    border-radius:14px;
+    cursor:pointer;
+    font-size:15px;
+    font-weight:bold;
+    transition:.25s;
+}
+
+.tab-btn.active.tab-pets{
+    background:#d9a86c;
+    color:#1a1208;
+    border-color:#d9a86c;
+}
+
+.tab-btn.active.tab-seeds{
+    background:#56cc56;
+    color:#08220c;
+    border-color:#56cc56;
+}
+
+.tab-btn.active.tab-gears{
+    background:#9d7dff;
+    color:#15102b;
+    border-color:#9d7dff;
+}
+
+.tab-panel{
+    display:none;
+}
+
+.tab-panel.active{
+    display:block;
+}
+
+.status{
+    text-align:center;
+    margin:0 20px 25px;
+    color:#888;
+    font-size:14px;
+}
+
+/* GRID DE ITENS (compartilhado pelas 3 categorias) */
+
+.stock-container{
+    width:90%;
+    max-width:1300px;
+    margin:0 auto 50px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+    gap:25px;
+}
+
+.stock-card{
+    background:#1b1f2a;
+    border-radius:20px;
+    padding:25px;
+    text-align:center;
+    transition:.3s;
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.stock-card:hover{
+    transform:translateY(-8px);
+}
+
+.stock-card img{
+    width:120px;
+    height:120px;
+    object-fit:contain;
+}
+
+.stock-card .nome{
+    font-size:22px;
+    margin-top:15px;
+    font-weight:bold;
+}
+
+.stock-card .stock-qtd{
+    margin-top:12px;
+    font-size:16px;
+}
+
+.stock-card .preco{
+    margin-top:8px;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.stock-card.pets .stock-qtd{ color:#d9a86c; }
+.stock-card.pets .preco{ color:#ffcf8f; }
+
+.stock-card.seeds .stock-qtd{ color:#69ff8f; }
+.stock-card.seeds .preco{ color:#9dffb0; }
+
+.stock-card.gears .stock-qtd{ color:#9d7dff; }
+.stock-card.gears .preco{ color:#bfa6ff; }
+
+.stock-card .buy-btn{
+    margin-top:16px;
+    width:100%;
+    border:none;
+    padding:12px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+    font-size:14px;
+    transition:.25s;
+}
+
+.stock-card.pets .buy-btn{ background:#d9a86c; color:#1a1208; }
+.stock-card.seeds .buy-btn{ background:#56cc56; color:#08220c; }
+.stock-card.gears .buy-btn{ background:#9d7dff; color:#15102b; }
+
+.stock-card .buy-btn:hover{
+    transform:translateY(-2px);
+}
+
+.empty-msg{
+    text-align:center;
+    color:#666;
+    grid-column:1 / -1;
+    padding:30px;
+}
+
+.footer{
+    text-align:center;
+    padding:40px;
+    color:#777;
+}
+
+/* RESPONSIVO */
+@media(max-width:600px){
+    .header{
+        padding:15px 20px;
+    }
+
+    .title h1{
+        font-size:26px;
+    }
+
+    .tab-btn{
+        padding:10px 18px;
+        font-size:13px;
+    }
+}

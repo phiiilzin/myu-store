@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Criar Vendedor</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/Painel_ADM.css') }}">
+</head>
+
+<body style="display:flex;align-items:center;justify-content:center;min-height:100vh;">
+
+<div class="section" style="max-width:420px;width:90%;">
+
+    <h1 style="margin-bottom:20px;color:#9dff00;">➕ Criar Vendedor</h1>
+
+    <form method="POST" style="display:flex;flex-direction:column;gap:12px;">
+
+        <input name="usuario" placeholder="Usuário" required
+               style="height:45px;border-radius:10px;border:1px solid #333;background:#252525;color:white;padding:0 10px;">
+
+        <input name="senha" type="password" placeholder="Senha" required
+               style="height:45px;border-radius:10px;border:1px solid #333;background:#252525;color:white;padding:0 10px;">
+
+        <button type="submit" style="width:100%;">Criar</button>
+
+    </form>
+
+    {% if mensagem %}
+    <p style="margin-top:15px;color:#9dff00;">{{ mensagem }}</p>
+    {% endif %}
+
+    <br>
+    <a href="{{ url_for('painel_adm') }}" style="color:#9dff00;text-decoration:none;">← Voltar ao painel</a>
+
+</div>
+
+</body>
+</html>

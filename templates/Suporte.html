@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suporte - MYU Store</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+</head>
+<body>
+
+<div class="chat-header">
+    <div>
+        <h1>🆘 Suporte</h1>
+        <div class="pedido-info">Tire suas dúvidas antes ou depois da compra</div>
+    </div>
+    {% if eh_painel_admin %}
+    <a href="{{ url_for('suporte_lista_conversas') }}" class="back-btn">Voltar</a>
+    {% else %}
+    <a href="{{ url_for('index') }}" class="back-btn">Voltar</a>
+    {% endif %}
+</div>
+
+<div class="chat-messages" id="chatMessages">
+    <div class="empty-chat" id="emptyChat">Carregando mensagens...</div>
+</div>
+
+<form class="chat-input-bar" id="chatForm">
+    <input type="text" id="mensagemInput" placeholder="Digite sua mensagem..." maxlength="1000" autocomplete="off" required>
+    <button type="submit">➤</button>
+</form>
+
+<script>
+const conversaId = {{ conversa_id }};
+const chatMessages = document.getElementById('chatMessages');
+const emptyChat = document.getElementById('emptyChat');
+const chatForm = document.getElementById('chatForm');
+const mensagemInput = document.getElementById('mensagemInput');
+
+let ultimoId = 0;
+let primeiraCarga = true;
+
+function formatarHora(isoString) {
+    const isoUtc = isoString.replace(' ', 'T') + 'Z';
+    const data = new Date(isoUtc);
+    if (isNaN(data.getTime())) return '';
+    return data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+function iconeAutor(autorTipo) {
+    if (autorTipo === 'vendedor') return '🛍️ ';
+    if (autorTipo === 'bot') return '🤖 ';
+    return '👤 ';
+}
+
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str ?? '';
+    return div.innerHTML;
+}
+
+function renderMensagem(msg) {
+    const div = document.createElement('div');
+    div.className = `msg ${msg.autor_tipo}`;
+    div.innerHTML = `
+        <div class="autor">${iconeAutor(msg.autor_tipo)}${escapeHtml(msg.autor_nome)}</div>
+        <div class="texto">${escapeHtml(msg.mensagem)}</div>
+        <div class="hora">${formatarHora(msg.criado_em)}</div>
+    `;
+    chatMessages.appendChild(div);
+    ultimoId = Math.max(ultimoId, msg.id);
+}
+
+async function buscarMensagens() {
+    try {
+        const resp = await fetch(`/suporte/${conversaId}/mensagens?desde=${ultimoId}`);
+        const data = await resp.json();
+
+        if (primeiraCarga) {
+            emptyChat.remove();
+            primeiraCarga = false;
+            if (data.mensagens.length === 0) {
+                chatMessages.innerHTML = '<div class="empty-chat">Nenhuma mensagem ainda. Diga olá! 👋</div>';
+                return;
+            }
+        }
+
+        if (data.mensagens.length > 0) {
+            const placeholder = chatMessages.querySelector('.empty-chat');
+            if (placeholder) placeholder.remove();
+
+            const estavaNoFinal = chatMessages.scrollTop + chatMessages.clientHeight >= chatMessages.scrollHeight - 50;
+
+            data.mensagens.forEach(renderMensagem);
+
+            if (estavaNoFinal || primeiraCarga) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+    } catch (err) {
+        console.error('Erro ao buscar mensagens:', err);
+    }
+}
+
+chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const texto = mensagemInput.value.trim();
+    if (!texto) return;
+
+    mensagemInput.value = '';
+    mensagemInput.disabled = true;
+
+    try {
+        const resp = await fetch(`/suporte/${conversaId}/enviar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `mensagem=${encodeURIComponent(texto)}`,
+        });
+        const data = await resp.json();
+
+        if (data.erro) {
+            alert(data.erro);
+        } else {
+            const placeholder = chatMessages.querySelector('.empty-chat');
+            if (placeholder) placeholder.remove();
+            renderMensagem(data.mensagem);
+
+            if (data.resposta_bot) {
+                renderMensagem(data.resposta_bot);
+            }
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    } catch (err) {
+        alert('Erro ao enviar mensagem. Tente novamente.');
+    } finally {
+        mensagemInput.disabled = false;
+        mensagemInput.focus();
+    }
+});
+
+buscarMensagens();
+setInterval(buscarMensagens, 3000);
+</script>
+
+</body>
+</html>

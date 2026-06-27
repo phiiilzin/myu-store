@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MYU Store - Pets Stock</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/PETS_STOCK.css') }}">
+</head>
+
+<body>
+
+<header class="header">
+    <div class="logo">🐾 MYU STORE</div>
+
+    <a href="{{ url_for('index') }}" class="back-btn">
+        Voltar
+    </a>
+</header>
+
+<section class="title">
+    <h1>PETS STOCK</h1>
+    <p>Confira os pets disponíveis atualmente.</p>
+</section>
+
+<div class="status">
+    <h3>🟢 Estoque Atualizado</h3>
+    <p>Os administradores podem atualizar os valores a qualquer momento.</p>
+</div>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="status" style="border:1px solid #d9a86c;">
+      {% for msg in messages %}<p>{{ msg }}</p>{% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<section class="stock-container">
+
+    {% for pet in pets %}
+    <div class="pet-card">
+        {% if pet['emoji'] %}
+        <div style="font-size:80px;line-height:1;">{{ pet['emoji'] }}</div>
+        {% elif pet['imagem'] %}
+        <img src="{{ url_for('static', filename=pet['imagem']) }}" onerror="this.style.display='none'">
+        {% endif %}
+        <div class="pet-name">{{ pet['nome'] }}</div>
+        <div class="pet-stock">Stock: {{ pet['stock'] }}</div>
+        <div class="pet-price">R$ {{ "%.2f"|format(pet['preco']) }}</div>
+
+        {% if pet['stock'] > 0 %}
+        <form method="POST" action="{{ url_for('carrinho_adicionar') }}">
+            <input type="hidden" name="categoria" value="pets">
+            <input type="hidden" name="item_id" value="{{ pet['id'] }}">
+            <input type="hidden" name="quantidade" value="1">
+            <button type="submit" class="buy-btn">Comprar</button>
+        </form>
+        {% else %}
+        <button class="buy-btn" disabled style="opacity:.5;cursor:not-allowed;">Esgotado</button>
+        {% endif %}
+    </div>
+    {% else %}
+    <p style="text-align:center;color:#888;">Nenhum pet em stock no momento.</p>
+    {% endfor %}
+
+</section>
+
+<footer class="footer">
+    © 2026 MYU Store - Grow a Garden
+</footer>
+
+</body>
+</html>

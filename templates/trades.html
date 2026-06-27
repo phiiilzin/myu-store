@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trades - MYU Store</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/trades.css') }}">
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">💜 MYU STORE</div>
+    <a href="{{ url_for('index') }}" class="back-btn">Voltar</a>
+</div>
+
+<div class="title">
+    <h1>Trades</h1>
+    <p>Negocie itens diretamente com outros jogadores</p>
+</div>
+
+<div class="container">
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-box">
+          {% for msg in messages %}<p>{{ msg }}</p>{% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- IDENTIFICAÇÃO: como não há login de jogador, usamos o nome digitado -->
+    <div class="identify-card">
+        <label>Digite seu nome de jogador para ver suas propostas e enviar novas trades</label>
+        <form method="GET" action="{{ url_for('trades_lista') }}" class="row">
+            <input type="text" name="nome" placeholder="Seu nome no jogo" value="{{ nome }}" required>
+            <button type="submit">Ver minhas trades</button>
+        </form>
+    </div>
+
+    {% if nome %}
+
+    <!-- PROPOR NOVA TRADE -->
+    <div class="form-section">
+        <h2>Propor uma trade</h2>
+
+        <form method="POST" action="{{ url_for('trades_criar') }}" id="tradeForm">
+            <input type="hidden" name="nome_ofertante" value="{{ nome }}">
+
+            <div class="field">
+                <label>Nome de quem vai receber a proposta</label>
+                <input type="text" name="nome_receptor" placeholder="Nome do outro jogador" required>
+            </div>
+
+            <h4 style="color:#69ff8f;margin:15px 0 8px;">Você oferece:</h4>
+            <div id="ofertaRows"></div>
+            <button type="button" class="add-row" id="addOferta">+ adicionar item oferecido</button>
+
+            <h4 style="color:#ffd166;margin:15px 0 8px;">Você pede em troca:</h4>
+            <div id="pedidoRows"></div>
+            <button type="button" class="add-row" id="addPedido">+ adicionar item pedido</button>
+
+            <div class="field">
+                <label>Mensagem (opcional)</label>
+                <input type="text" name="mensagem" placeholder="Ex: bora fechar esse negócio!">
+            </div>
+
+            <button type="submit" class="submit-btn">Enviar proposta</button>
+        </form>
+    </div>
+
+    <!-- LISTAGEM -->
+    <div class="tabs">
+        <a href="#recebidas" class="tab-link active" onclick="mostrarAba('recebidas')" id="tabRecebidas">Recebidas ({{ recebidas|length }})</a>
+        <a href="#enviadas" class="tab-link" onclick="mostrarAba('enviadas')" id="tabEnviadas">Enviadas ({{ enviadas|length }})</a>
+    </div>
+
+    <div id="painelRecebidas">
+        {% for entry in recebidas %}
+        {% set trade = entry.trade %}
+        <div class="trade-card">
+            <div class="trade-card-header">
+                <div>De: <strong>{{ trade['nome_ofertante'] }}</strong></div>
+                <span class="trade-status {{ trade['status'] }}">{{ trade['status'] }}</span>
+            </div>
+            {% if trade['mensagem'] %}<p style="color:#aaa;font-size:14px;margin-bottom:10px;">"{{ trade['mensagem'] }}"</p>{% endif %}
+            <div class="trade-sides">
+                <div class="trade-side">
+                    <h4>Ele oferece</h4>
+                    <ul>{% for i in entry.ofertados %}<li>• {{ i['nome_item'] }} {% if i['quantidade'] > 1 %}x{{ i['quantidade'] }}{% endif %}</li>{% endfor %}</ul>
+                </div>
+                <div class="trade-arrow">⇄</div>
+                <div class="trade-side">
+                    <h4>Ele pede</h4>
+                    <ul>{% for i in entry.pedidos %}<li>• {{ i['nome_item'] }} {% if i['quantidade'] > 1 %}x{{ i['quantidade'] }}{% endif %}</li>{% endfor %}</ul>
+                </div>
+            </div>
+            {% if trade['status'] == 'pendente' %}
+            <div class="trade-actions">
+                <form method="POST" action="{{ url_for('trades_aceitar', trade_id=trade['id']) }}" style="flex:1;">
+                    <input type="hidden" name="nome" value="{{ nome }}">
+                    <button type="submit" class="btn-accept">Aceitar</button>
+                </form>
+                <form method="POST" action="{{ url_for('trades_recusar', trade_id=trade['id']) }}" style="flex:1;">
+                    <input type="hidden" name="nome" value="{{ nome }}">
+                    <button type="submit" class="btn-reject">Recusar</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="empty-state">Você ainda não recebeu nenhuma proposta de trade.</div>
+        {% endfor %}
+    </div>
+
+    <div id="painelEnviadas" style="display:none;">
+        {% for entry in enviadas %}
+        {% set trade = entry.trade %}
+        <div class="trade-card">
+            <div class="trade-card-header">
+                <div>Para: <strong>{{ trade['nome_receptor'] }}</strong></div>
+                <span class="trade-status {{ trade['status'] }}">{{ trade['status'] }}</span>
+            </div>
+            {% if trade['mensagem'] %}<p style="color:#aaa;font-size:14px;margin-bottom:10px;">"{{ trade['mensagem'] }}"</p>{% endif %}
+            <div class="trade-sides">
+                <div class="trade-side">
+                    <h4>Você oferece</h4>
+                    <ul>{% for i in entry.ofertados %}<li>• {{ i['nome_item'] }} {% if i['quantidade'] > 1 %}x{{ i['quantidade'] }}{% endif %}</li>{% endfor %}</ul>
+                </div>
+                <div class="trade-arrow">⇄</div>
+                <div class="trade-side">
+                    <h4>Você pede</h4>
+                    <ul>{% for i in entry.pedidos %}<li>• {{ i['nome_item'] }} {% if i['quantidade'] > 1 %}x{{ i['quantidade'] }}{% endif %}</li>{% endfor %}</ul>
+                </div>
+            </div>
+            {% if trade['status'] == 'pendente' %}
+            <div class="trade-actions">
+                <form method="POST" action="{{ url_for('trades_cancelar', trade_id=trade['id']) }}" style="flex:1;">
+                    <input type="hidden" name="nome" value="{{ nome }}">
+                    <button type="submit" class="btn-cancel">Cancelar proposta</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="empty-state">Você ainda não enviou nenhuma proposta de trade.</div>
+        {% endfor %}
+    </div>
+
+    {% endif %}
+
+</div>
+
+<footer class="footer">© 2026 MYU Store - Grow a Garden</footer>
+
+<script>
+function linhaItem(prefixoOferta) {
+    const div = document.createElement('div');
+    div.className = 'item-row';
+    const nomeInput = prefixoOferta ? 'item_oferta[]' : 'item_pedido[]';
+    const qtdInput = prefixoOferta ? 'qtd_oferta[]' : 'qtd_pedido[]';
+    div.innerHTML = `
+        <input type="text" name="${nomeInput}" placeholder="Nome do item" required>
+        <input type="number" name="${qtdInput}" class="qty" placeholder="Qtd" min="1" value="1" required>
+        <button type="button" class="remove-row">✕</button>
+    `;
+    div.querySelector('.remove-row').addEventListener('click', () => div.remove());
+    return div;
+}
+
+const ofertaRows = document.getElementById('ofertaRows');
+const pedidoRows = document.getElementById('pedidoRows');
+
+if (ofertaRows && pedidoRows) {
+    ofertaRows.appendChild(linhaItem(true));
+    pedidoRows.appendChild(linhaItem(false));
+
+    document.getElementById('addOferta').addEventListener('click', () => {
+        ofertaRows.appendChild(linhaItem(true));
+    });
+    document.getElementById('addPedido').addEventListener('click', () => {
+        pedidoRows.appendChild(linhaItem(false));
+    });
+}
+
+function mostrarAba(aba) {
+    document.getElementById('painelRecebidas').style.display = aba === 'recebidas' ? 'block' : 'none';
+    document.getElementById('painelEnviadas').style.display = aba === 'enviadas' ? 'block' : 'none';
+    document.getElementById('tabRecebidas').classList.toggle('active', aba === 'recebidas');
+    document.getElementById('tabEnviadas').classList.toggle('active', aba === 'enviadas');
+}
+</script>
+
+</body>
+</html>

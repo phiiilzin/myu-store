@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Painel Admin - MYU Store</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/Painel_ADM.css') }}">
+
+{% if push_disponivel %}
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
+<script src="{{ url_for('static', filename='js/firebase-config.js') }}"></script>
+{% endif %}
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <h1>⚙️ Painel Admin</h1>
+
+    <div class="user-box">
+        {% if push_disponivel %}
+        <button id="ativarNotificacoesBtn" class="logout" style="background:#252525;margin-right:10px;">🔔 Ativar notificações</button>
+        {% endif %}
+        <span>👤 {{ session['usuario'] }}</span>
+        <a href="{{ url_for('suporte_lista_conversas') }}" class="logout" style="background:#252525;margin-right:10px;">🆘 Suporte</a>
+        <a href="{{ url_for('criar_vendedor') }}" class="logout" style="background:#252525;margin-right:10px;">+ Vendedor</a>
+        <a href="{{ url_for('logout') }}" class="logout">Sair</a>
+    </div>
+</div>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div style="max-width:1200px;margin:20px auto 0;text-align:center;color:#9dff00;">
+      {% for msg in messages %}<p>{{ msg }}</p>{% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- CONTAINER -->
+<div class="container">
+
+    <!-- PEDIDOS / CHATS -->
+    <div class="section">
+        <h2>🛒 Pedidos recentes</h2>
+
+        {% if not pedidos %}
+        <p style="color:#888;">Nenhum pedido finalizado ainda.</p>
+        {% else %}
+        <table style="width:100%;border-collapse:collapse;">
+            {% for pedido in pedidos %}
+            <tr style="border-top:1px solid rgba(255,255,255,.08);">
+                <td style="padding:10px 5px;">Pedido #{{ pedido['id'] }}</td>
+                <td style="padding:10px 5px;color:#9dff00;">R$ {{ "%.2f"|format(pedido['total']) }}</td>
+                <td style="padding:10px 5px;color:#aaa;font-size:13px;">{{ pedido['criado_em'] }}</td>
+                <td style="padding:10px 5px;text-align:right;">
+                    <a href="{{ url_for('chat_pedido', pedido_id=pedido['id']) }}"
+                       style="display:inline-block;background:#9dff00;color:#0a0a0a;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:bold;">
+                        💬 Abrir chat
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    </div>
+
+    <!-- SOBRE NÓS -->
+    <div class="section">
+        <h2>📝 Editar "Sobre Nós"</h2>
+        <p style="color:#aaa;font-size:13px;margin-bottom:12px;">
+            Este texto aparece na página pública "Sobre Nós", acessível pelo menu do site.
+        </p>
+
+        <form method="POST" action="{{ url_for('update_sobre_nos') }}">
+            <textarea name="texto" maxlength="5000" required
+                style="width:100%;min-height:140px;border-radius:10px;border:1px solid #333;background:#252525;color:white;padding:14px;font-size:14px;resize:vertical;font-family:inherit;">{{ sobre_nos_texto }}</textarea>
+            <button type="submit" style="margin-top:12px;">Salvar texto</button>
+        </form>
+    </div>
+
+    <!-- BOT DE ATENDIMENTO -->
+    <div class="section">
+        <h2>🤖 Bot de Atendimento</h2>
+        <p style="color:#aaa;font-size:13px;margin-bottom:15px;">
+            O bot responde automaticamente no chat enquanto nenhum vendedor tiver respondido ainda.
+            Ele procura por estas palavras-chave na mensagem do cliente (sem diferenciar acento/maiúscula).
+        </p>
+
+        <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+            {% for regra in bot_regras %}
+            <tr style="border-top:1px solid rgba(255,255,255,.08);">
+                <form method="POST" action="{{ url_for('bot_editar_regra', regra_id=regra['id']) }}" style="display:contents;">
+                    <td style="padding:8px 5px;width:140px;">
+                        <input type="text" name="palavra_chave" value="{{ regra['palavra_chave'] }}" maxlength="100"
+                            style="width:100%;height:36px;border-radius:8px;border:1px solid #333;background:#252525;color:#9dff00;padding:0 10px;font-size:13px;">
+                    </td>
+                    <td style="padding:8px 5px;">
+                        <input type="text" name="resposta" value="{{ regra['resposta'] }}" maxlength="1000"
+                            style="width:100%;height:36px;border-radius:8px;border:1px solid #333;background:#252525;color:white;padding:0 10px;font-size:13px;">
+                    </td>
+                    <td style="padding:8px 5px;text-align:right;white-space:nowrap;">
+                        <button type="submit" style="width:auto;height:32px;padding:0 12px;font-size:12px;">Salvar</button>
+                    </td>
+                </form>
+                <td style="padding:8px 5px;text-align:right;">
+                    <form method="POST" action="{{ url_for('bot_excluir_regra', regra_id=regra['id']) }}" style="display:inline;">
+                        <button type="submit" style="width:auto;height:32px;padding:0 12px;background:#ff2b2b;color:white;font-size:12px;" onclick="return confirm('Remover esta regra?');">Remover</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td style="padding:10px 5px;color:#888;">Nenhuma regra cadastrada.</td></tr>
+            {% endfor %}
+        </table>
+
+        <h3 style="font-size:15px;margin-bottom:10px;color:#9dff00;">+ Nova regra</h3>
+        <form method="POST" action="{{ url_for('bot_criar_regra') }}" style="margin-bottom:25px;">
+            <div class="form-grid">
+                <input type="text" name="palavra_chave" placeholder="Palavra-chave (ex: garantia)" required maxlength="100">
+                <input type="text" name="resposta" placeholder="Resposta do bot" required maxlength="1000">
+            </div>
+            <button type="submit">Adicionar regra</button>
+        </form>
+
+        <h3 style="font-size:15px;margin-bottom:10px;color:#9dff00;">Resposta padrão</h3>
+        <p style="color:#aaa;font-size:13px;margin-bottom:10px;">
+            Usada quando nenhuma palavra-chave bate com a mensagem do cliente.
+        </p>
+        <form method="POST" action="{{ url_for('bot_atualizar_resposta_padrao') }}">
+            <textarea name="texto" maxlength="1000" required
+                style="width:100%;min-height:80px;border-radius:10px;border:1px solid #333;background:#252525;color:white;padding:14px;font-size:14px;resize:vertical;font-family:inherit;">{{ bot_resposta_padrao }}</textarea>
+            <button type="submit" style="margin-top:12px;">Salvar resposta padrão</button>
+        </form>
+    </div>
+
+
+    <!-- SEEDS -->
+    <div class="section">
+        <h2>🌱 Editar / Adicionar Seeds</h2>
+
+        <form method="POST" action="{{ url_for('update_seed') }}">
+            <div class="form-grid">
+                <input type="text" name="name" placeholder="Nome da Seed" required>
+                <input type="number" name="stock" placeholder="Stock" required min="0">
+                <input type="number" name="price" placeholder="Preço" required min="0" step="0.01">
+                <input type="text" name="image" placeholder="Imagem (assets/...)">
+                <input type="text" name="emoji" placeholder="Emoji (ex: 🌱)" maxlength="10" style="font-size:18px;">
+            </div>
+            <button type="submit">Atualizar Seed</button>
+        </form>
+
+        <p style="margin:15px 0 8px;color:#aaa;font-size:13px;">Se o nome já existir, atualiza. Se não existir, cria um novo item. Se preencher emoji e imagem, o emoji tem prioridade na exibição.</p>
+
+        <table style="width:100%;margin-top:15px;border-collapse:collapse;">
+            {% for seed in seeds %}
+            <tr style="border-top:1px solid rgba(255,255,255,.08);">
+                <td style="padding:10px 5px;font-size:20px;width:30px;">{{ seed['emoji'] or '' }}</td>
+                <td style="padding:10px 5px;">{{ seed['nome'] }}</td>
+                <td style="padding:10px 5px;color:#aaa;">Stock: {{ seed['stock'] }}</td>
+                <td style="padding:10px 5px;color:#9dff00;">R$ {{ "%.2f"|format(seed['preco']) }}</td>
+                <td style="padding:10px 5px;text-align:right;">
+                    <form method="POST" action="{{ url_for('delete_item', tabela='seeds', item_id=seed['id']) }}" style="display:inline;">
+                        <button type="submit" style="width:auto;height:32px;padding:0 12px;background:#ff2b2b;color:white;font-size:13px;" onclick="return confirm('Remover {{ seed['nome'] }}?');">Remover</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <!-- GEARS -->
+    <div class="section">
+        <h2>⚙️ Editar / Adicionar Gears</h2>
+
+        <form method="POST" action="{{ url_for('update_gear') }}">
+            <div class="form-grid">
+                <input type="text" name="name" placeholder="Nome do Gear" required>
+                <input type="number" name="stock" placeholder="Stock" required min="0">
+                <input type="number" name="price" placeholder="Preço" required min="0" step="0.01">
+                <input type="text" name="image" placeholder="Imagem (assets/...)">
+                <input type="text" name="emoji" placeholder="Emoji (ex: ⚙️)" maxlength="10" style="font-size:18px;">
+            </div>
+            <button type="submit">Atualizar Gear</button>
+        </form>
+
+        <table style="width:100%;margin-top:15px;border-collapse:collapse;">
+            {% for gear in gears %}
+            <tr style="border-top:1px solid rgba(255,255,255,.08);">
+                <td style="padding:10px 5px;font-size:20px;width:30px;">{{ gear['emoji'] or '' }}</td>
+                <td style="padding:10px 5px;">{{ gear['nome'] }}</td>
+                <td style="padding:10px 5px;color:#aaa;">Stock: {{ gear['stock'] }}</td>
+                <td style="padding:10px 5px;color:#9dff00;">R$ {{ "%.2f"|format(gear['preco']) }}</td>
+                <td style="padding:10px 5px;text-align:right;">
+                    <form method="POST" action="{{ url_for('delete_item', tabela='gears', item_id=gear['id']) }}" style="display:inline;">
+                        <button type="submit" style="width:auto;height:32px;padding:0 12px;background:#ff2b2b;color:white;font-size:13px;" onclick="return confirm('Remover {{ gear['nome'] }}?');">Remover</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <!-- PETS -->
+    <div class="section">
+        <h2>🐾 Editar / Adicionar Pets</h2>
+
+        <form method="POST" action="{{ url_for('update_pet') }}">
+            <div class="form-grid">
+                <input type="text" name="name" placeholder="Nome do Pet" required>
+                <input type="number" name="stock" placeholder="Stock" required min="0">
+                <input type="number" name="price" placeholder="Preço" required min="0" step="0.01">
+                <input type="text" name="image" placeholder="Imagem (assets/...)">
+                <input type="text" name="emoji" placeholder="Emoji (ex: 🐉)" maxlength="10" style="font-size:18px;">
+            </div>
+            <button type="submit">Atualizar Pet</button>
+        </form>
+
+        <table style="width:100%;margin-top:15px;border-collapse:collapse;">
+            {% for pet in pets %}
+            <tr style="border-top:1px solid rgba(255,255,255,.08);">
+                <td style="padding:10px 5px;font-size:20px;width:30px;">{{ pet['emoji'] or '' }}</td>
+                <td style="padding:10px 5px;">{{ pet['nome'] }}</td>
+                <td style="padding:10px 5px;color:#aaa;">Stock: {{ pet['stock'] }}</td>
+                <td style="padding:10px 5px;color:#9dff00;">R$ {{ "%.2f"|format(pet['preco']) }}</td>
+                <td style="padding:10px 5px;text-align:right;">
+                    <form method="POST" action="{{ url_for('delete_item', tabela='pets', item_id=pet['id']) }}" style="display:inline;">
+                        <button type="submit" style="width:auto;height:32px;padding:0 12px;background:#ff2b2b;color:white;font-size:13px;" onclick="return confirm('Remover {{ pet['nome'] }}?');">Remover</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <!-- OFERTAS DO DIA -->
+    <div class="section">
+        <h2>🔥 Ofertas do Dia</h2>
+        <p style="color:#aaa;font-size:13px;margin-bottom:15px;">
+            Escolha um item já existente (de Pets, Seeds ou Gears) e defina um preço promocional.
+            O preço original do item não é alterado — só aparece um preço alternativo na home.
+        </p>
+
+        <table style="width:100%;margin-bottom:20px;border-collapse:collapse;">
+            {% for oferta in ofertas %}
+            <tr style="border-top:1px solid rgba(255,255,255,.08);">
+                <td style="padding:8px 5px;font-size:20px;width:30px;">{{ oferta.emoji or '' }}</td>
+                <td style="padding:8px 5px;">{{ oferta.nome }} <span style="color:#666;font-size:12px;">({{ oferta.categoria }})</span></td>
+                <td style="padding:8px 5px;color:#888;text-decoration:line-through;font-size:13px;">R$ {{ "%.2f"|format(oferta.preco_original) }}</td>
+                <td style="padding:8px 5px;color:#ffd166;font-weight:bold;">R$ {{ "%.2f"|format(oferta.preco_promocional) }}</td>
+                <td style="padding:8px 5px;text-align:right;">
+                    <form method="POST" action="{{ url_for('ofertas_excluir', oferta_id=oferta.oferta_id) }}" style="display:inline;">
+                        <button type="submit" style="width:auto;height:32px;padding:0 12px;background:#ff2b2b;color:white;font-size:12px;" onclick="return confirm('Remover esta oferta?');">Remover</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td style="padding:10px 5px;color:#888;">Nenhuma oferta cadastrada.</td></tr>
+            {% endfor %}
+        </table>
+
+        <h3 style="font-size:15px;margin-bottom:10px;color:#ffd166;">+ Nova oferta</h3>
+        <form method="POST" action="{{ url_for('ofertas_criar') }}">
+            <div class="form-grid">
+                <select name="categoria" id="ofertaCategoria" required
+                    style="height:45px;border-radius:10px;border:1px solid #333;background:#252525;color:white;padding:0 10px;">
+                    <option value="">Categoria...</option>
+                    <option value="pets">Pets</option>
+                    <option value="seeds">Seeds</option>
+                    <option value="gears">Gears</option>
+                </select>
+                <select name="item_id" id="ofertaItem" required
+                    style="height:45px;border-radius:10px;border:1px solid #333;background:#252525;color:white;padding:0 10px;">
+                    <option value="">Escolha a categoria primeiro...</option>
+                </select>
+                <input type="number" name="preco_promocional" placeholder="Preço promocional" required min="0" step="0.01">
+            </div>
+            <button type="submit">Adicionar oferta</button>
+        </form>
+    </div>
+
+</div>
+
+<script>
+// Preenche o <select> de itens conforme a categoria escolhida, usando os
+// dados já renderizados pelo servidor (sem precisar de nova chamada à API).
+const itensPorCategoria = {
+    pets: [{% for p in pets %}{id: {{ p['id'] }}, nome: {{ p['nome']|tojson }}},{% endfor %}],
+    seeds: [{% for s in seeds %}{id: {{ s['id'] }}, nome: {{ s['nome']|tojson }}},{% endfor %}],
+    gears: [{% for g in gears %}{id: {{ g['id'] }}, nome: {{ g['nome']|tojson }}},{% endfor %}],
+};
+
+const categoriaSelect = document.getElementById('ofertaCategoria');
+const itemSelect = document.getElementById('ofertaItem');
+
+if (categoriaSelect) {
+    categoriaSelect.addEventListener('change', () => {
+        const categoria = categoriaSelect.value;
+        const itens = itensPorCategoria[categoria] || [];
+
+        itemSelect.innerHTML = '<option value="">Escolha o item...</option>';
+        itens.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.id;
+            opt.textContent = item.nome;
+            itemSelect.appendChild(opt);
+        });
+    });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conversas de Suporte - MYU Store</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/Painel_ADM.css') }}">
+</head>
+
+<body>
+
+<div class="header">
+    <h1>🆘 Conversas de Suporte</h1>
+
+    <div class="user-box">
+        <a href="{{ url_for('painel_adm') }}" class="logout" style="background:#252525;">← Painel</a>
+    </div>
+</div>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div style="max-width:1200px;margin:20px auto 0;text-align:center;color:#9dff00;">
+      {% for msg in messages %}<p>{{ msg }}</p>{% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<div class="container">
+    <div class="section">
+
+        {% if not conversas %}
+        <p style="color:#888;">Nenhuma conversa de suporte ainda.</p>
+        {% else %}
+        <table style="width:100%;border-collapse:collapse;">
+            {% for item in conversas %}
+            {% set conversa = item.conversa %}
+            {% set ultima = item.ultima_mensagem %}
+            <tr style="border-top:1px solid rgba(255,255,255,.08);">
+                <td style="padding:12px 5px;">
+                    <strong>Conversa #{{ conversa['id'] }}</strong>
+                    {% if not conversa['vendedor_respondeu'] %}
+                    <span style="background:rgba(157,255,0,.15);color:#9dff00;font-size:11px;padding:3px 8px;border-radius:6px;margin-left:8px;">SÓ BOT</span>
+                    {% endif %}
+                </td>
+                <td style="padding:12px 5px;color:#aaa;font-size:13px;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                    {% if ultima %}
+                        {% if ultima['autor_tipo'] == 'bot' %}🤖{% elif ultima['autor_tipo'] == 'vendedor' %}🛍️{% else %}👤{% endif %}
+                        {{ ultima['mensagem'] }}
+                    {% else %}
+                        <em>sem mensagens</em>
+                    {% endif %}
+                </td>
+                <td style="padding:12px 5px;color:#666;font-size:12px;white-space:nowrap;">{{ conversa['criado_em'] }}</td>
+                <td style="padding:12px 5px;text-align:right;">
+                    <a href="{{ url_for('suporte_admin_chat', conversa_id=conversa['id']) }}"
+                       style="display:inline-block;background:#9dff00;color:#0a0a0a;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:bold;">
+                        💬 Abrir
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+
+    </div>
+</div>
+
+</body>
+</html>

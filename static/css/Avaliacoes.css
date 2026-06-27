@@ -1,0 +1,135 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI', sans-serif;
+}
+
+body{
+    background:#0f1117;
+    color:white;
+    min-height:100vh;
+}
+
+.header{
+    width:100%;
+    padding:20px 40px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#171a23;
+    border-bottom:1px solid rgba(255,255,255,.1);
+}
+
+.logo{
+    font-size:28px;
+    font-weight:bold;
+    color:#9d7dff;
+}
+
+.back-btn{
+    text-decoration:none;
+    color:white;
+    background:#7c3aed;
+    padding:10px 20px;
+    border-radius:10px;
+    transition:.3s;
+}
+
+.title{
+    text-align:center;
+    margin:40px 20px 20px;
+}
+
+.title h1{
+    font-size:38px;
+    color:#9d7dff;
+}
+
+.resumo{
+    text-align:center;
+    margin-bottom:35px;
+}
+
+.resumo .nota-grande{
+    font-size:48px;
+    font-weight:bold;
+    color:#ffd166;
+}
+
+.resumo .estrelas{
+    font-size:24px;
+    color:#ffd166;
+    margin-top:5px;
+}
+
+.resumo .total{
+    color:#888;
+    font-size:14px;
+    margin-top:5px;
+}
+
+.lista{
+    width:90%;
+    max-width:800px;
+    margin:0 auto 60px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+}
+
+.avaliacao-card{
+    background:#1b1f2a;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    padding:20px 24px;
+}
+
+.avaliacao-card .estrelas{
+    color:#ffd166;
+    font-size:18px;
+    margin-bottom:8px;
+}
+
+.avaliacao-card .comentario{
+    color:#ddd;
+    font-size:15px;
+    line-height:1.5;
+}
+
+.avaliacao-card .data{
+    color:#666;
+    font-size:12px;
+    margin-top:10px;
+}
+
+.empty-state{
+    text-align:center;
+    color:#777;
+    padding:50px 20px;
+}
+
+.footer{
+    text-align:center;
+    padding:40px;
+    color:#777;
+}
+
+/* RESPONSIVO */
+@media(max-width:600px){
+    .header{
+        padding:15px 20px;
+    }
+
+    .title h1{
+        font-size:26px;
+    }
+
+    .resumo .nota-grande{
+        font-size:36px;
+    }
+
+    .avaliacao-card{
+        padding:16px 18px;
+    }
+}

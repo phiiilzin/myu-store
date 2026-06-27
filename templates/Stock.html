@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MYU Store - Stock</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/Stock.css') }}">
+</head>
+
+<body>
+
+<header class="header">
+    <div class="logo">🌱 MYU STORE</div>
+    <a href="{{ url_for('index') }}" class="back-btn">Voltar</a>
+</header>
+
+<section class="title">
+    <h1>STOCK</h1>
+    <p>Confira tudo o que está disponível agora: Pets, Seeds e Gears</p>
+</section>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="status" style="color:#9d7dff;">
+      {% for msg in messages %}<p>{{ msg }}</p>{% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<div class="tabs">
+    <button class="tab-btn active tab-pets" data-tab="pets" onclick="mostrarAba('pets')">🐾 Pets</button>
+    <button class="tab-btn tab-seeds" data-tab="seeds" onclick="mostrarAba('seeds')">🌱 Seeds</button>
+    <button class="tab-btn tab-gears" data-tab="gears" onclick="mostrarAba('gears')">⚙️ Gears</button>
+</div>
+
+<!-- PETS -->
+<div class="tab-panel active" id="painel-pets">
+    <div class="stock-container">
+        {% for pet in pets %}
+        <div class="stock-card pets">
+            {% if pet['emoji'] %}
+            <div style="font-size:80px;line-height:1;">{{ pet['emoji'] }}</div>
+            {% elif pet['imagem'] %}
+            <img src="{{ url_for('static', filename=pet['imagem']) }}" onerror="this.style.display='none'">
+            {% endif %}
+            <div class="nome">{{ pet['nome'] }}</div>
+            <div class="stock-qtd">Stock: {{ pet['stock'] }}</div>
+            <div class="preco">R$ {{ "%.2f"|format(pet['preco']) }}</div>
+
+            {% if pet['stock'] > 0 %}
+            <form method="POST" action="{{ url_for('carrinho_adicionar') }}">
+                <input type="hidden" name="categoria" value="pets">
+                <input type="hidden" name="item_id" value="{{ pet['id'] }}">
+                <input type="hidden" name="quantidade" value="1">
+                <button type="submit" class="buy-btn">Comprar</button>
+            </form>
+            {% else %}
+            <button class="buy-btn" disabled style="opacity:.5;cursor:not-allowed;">Esgotado</button>
+            {% endif %}
+        </div>
+        {% else %}
+        <p class="empty-msg">Nenhum pet em stock no momento.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- SEEDS -->
+<div class="tab-panel" id="painel-seeds">
+    <div class="stock-container">
+        {% for seed in seeds %}
+        <div class="stock-card seeds">
+            {% if seed['emoji'] %}
+            <div style="font-size:80px;line-height:1;">{{ seed['emoji'] }}</div>
+            {% elif seed['imagem'] %}
+            <img src="{{ url_for('static', filename=seed['imagem']) }}" onerror="this.style.display='none'">
+            {% endif %}
+            <div class="nome">{{ seed['nome'] }}</div>
+            <div class="stock-qtd">Stock: {{ seed['stock'] }}</div>
+            <div class="preco">R$ {{ "%.2f"|format(seed['preco']) }}</div>
+
+            {% if seed['stock'] > 0 %}
+            <form method="POST" action="{{ url_for('carrinho_adicionar') }}">
+                <input type="hidden" name="categoria" value="seeds">
+                <input type="hidden" name="item_id" value="{{ seed['id'] }}">
+                <input type="hidden" name="quantidade" value="1">
+                <button type="submit" class="buy-btn">Comprar</button>
+            </form>
+            {% else %}
+            <button class="buy-btn" disabled style="opacity:.5;cursor:not-allowed;">Esgotado</button>
+            {% endif %}
+        </div>
+        {% else %}
+        <p class="empty-msg">Nenhuma seed em stock no momento.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- GEARS -->
+<div class="tab-panel" id="painel-gears">
+    <div class="stock-container">
+        {% for gear in gears %}
+        <div class="stock-card gears">
+            {% if gear['emoji'] %}
+            <div style="font-size:80px;line-height:1;">{{ gear['emoji'] }}</div>
+            {% elif gear['imagem'] %}
+            <img src="{{ url_for('static', filename=gear['imagem']) }}" onerror="this.style.display='none'">
+            {% endif %}
+            <div class="nome">{{ gear['nome'] }}</div>
+            <div class="stock-qtd">Stock: {{ gear['stock'] }}</div>
+            <div class="preco">R$ {{ "%.2f"|format(gear['preco']) }}</div>
+
+            {% if gear['stock'] > 0 %}
+            <form method="POST" action="{{ url_for('carrinho_adicionar') }}">
+                <input type="hidden" name="categoria" value="gears">
+                <input type="hidden" name="item_id" value="{{ gear['id'] }}">
+                <input type="hidden" name="quantidade" value="1">
+                <button type="submit" class="buy-btn">Comprar</button>
+            </form>
+            {% else %}
+            <button class="buy-btn" disabled style="opacity:.5;cursor:not-allowed;">Esgotado</button>
+            {% endif %}
+        </div>
+        {% else %}
+        <p class="empty-msg">Nenhum gear em stock no momento.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<footer class="footer">© 2026 MYU Store - Grow a Garden</footer>
+
+<script>
+function mostrarAba(nome) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+    document.getElementById('painel-' + nome).classList.add('active');
+    document.querySelector('.tab-' + nome).classList.add('active');
+}
+
+// Se a URL tiver #seeds ou #gears, abre direto naquela aba
+const hash = window.location.hash.replace('#', '');
+if (['pets', 'seeds', 'gears'].includes(hash)) {
+    mostrarAba(hash);
+}
+</script>
+
+</body>
+</html>

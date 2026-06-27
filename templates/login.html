@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Login - MYU Store</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style_login.css') }}">
+</head>
+
+<body>
+
+<!-- FUNDO -->
+<div class="background"></div>
+
+<!-- CABEÇALHO -->
+<header class="top-bar">
+    <h1>MYU STORE</h1>
+    <p>A melhor loja de Grow a Garden</p>
+</header>
+
+<!-- CONTAINER PRINCIPAL -->
+<main class="login-container">
+
+    <!-- CARD LOGIN -->
+    <section class="login-card">
+
+        <div class="login-header">
+            <h2>👤 Login de Vendedor</h2>
+            <p>
+                Acesse o painel administrativo para gerenciar
+                sementes, pets, gears e estoque da loja.
+            </p>
+        </div>
+
+        <!-- ERRO CONTROLADO (SEM APARECER TEXTO BRUTO) -->
+        <div class="error-box" id="errorBox">
+            Usuário ou senha incorretos
+        </div>
+
+        <form method="POST" action="{{ url_for('login') }}" class="login-form">
+
+            <div class="input-group">
+                <label>Usuário</label>
+                <input type="text" name="usuario" placeholder="Digite seu usuário" required>
+            </div>
+
+            <div class="input-group">
+                <label>Senha</label>
+                <input type="password" name="senha" placeholder="Digite sua senha" required>
+            </div>
+
+            <div class="options">
+
+                <label class="remember">
+                    <input type="checkbox">
+                    Lembrar-me
+                </label>
+
+                <a href="#" class="forgot">
+                    Esqueci minha senha
+                </a>
+
+            </div>
+
+            <button type="submit" class="login-btn">
+                🔐 Entrar no Painel
+            </button>
+
+        </form>
+
+        <!-- SEGURANÇA -->
+        <div class="security-info">
+
+            <h3>🛡️ Segurança do Sistema</h3>
+
+            <ul>
+                <li>Conexão criptografada local</li>
+                <li>Acesso restrito a vendedores autorizados</li>
+                <li>Monitoramento de ações no painel</li>
+                <li>Proteção contra acessos não autorizados</li>
+            </ul>
+
+        </div>
+
+    </section>
+
+    <!-- CARD INFORMATIVO -->
+    <section class="info-card">
+
+        <h2>🚀 MYU Store System</h2>
+
+        <p>
+            Sistema completo para gerenciamento de estoque da loja
+            Grow a Garden com controle de vendas e inventário.
+        </p>
+
+        <div class="features">
+
+            <div class="feature">
+                <span>📦</span>
+                <div>
+                    <h3>Estoque Inteligente</h3>
+                    <p>Controle de Seeds, Pets e Gears em tempo real.</p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <span>💰</span>
+                <div>
+                    <h3>Vendas</h3>
+                    <p>Gerencie pedidos e valores dos itens.</p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <span>📊</span>
+                <div>
+                    <h3>Relatórios</h3>
+                    <p>Visualize estatísticas da loja.</p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <span>⚙️</span>
+                <div>
+                    <h3>Painel Admin</h3>
+                    <p>Controle total do sistema da loja.</p>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<!-- RODAPÉ -->
+<footer class="footer">
+    <p>© 2026 MYU Store - Todos os direitos reservados</p>
+</footer>
+
+<!-- SCRIPT PARA ERRO -->
+<script>
+    const params = new URLSearchParams(window.location.search);
+    if(params.get("erro")){
+        document.getElementById("errorBox").style.display = "block";
+    }
+</script>
+
+</body>
+</html>

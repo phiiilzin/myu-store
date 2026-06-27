@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat - Pedido #{{ pedido['id'] }} - MYU Store</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+<style>
+.avaliacao-box{
+    max-width:800px;
+    margin:15px auto 0;
+    width:90%;
+    background:rgba(255,209,102,.06);
+    border:1px solid rgba(255,209,102,.2);
+    border-radius:14px;
+    padding:16px 20px;
+}
+
+.avaliacao-box h3{
+    color:#ffd166;
+    font-size:15px;
+    margin-bottom:10px;
+}
+
+.estrelas-input{
+    display:flex;
+    gap:6px;
+    font-size:26px;
+    margin-bottom:12px;
+}
+
+.estrelas-input span{
+    cursor:pointer;
+    color:#444;
+    transition:.15s;
+}
+
+.estrelas-input span.selecionada{
+    color:#ffd166;
+}
+
+.avaliacao-box textarea{
+    width:100%;
+    min-height:60px;
+    border-radius:10px;
+    border:1px solid #333;
+    background:#1b1b1b;
+    color:white;
+    padding:10px 12px;
+    font-size:13px;
+    resize:vertical;
+    margin-bottom:10px;
+}
+
+.avaliacao-box button{
+    background:#ffd166;
+    color:#1a1208;
+    border:none;
+    padding:10px 22px;
+    border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
+    font-size:13px;
+}
+
+.avaliacao-feita{
+    color:#ffd166;
+    font-size:18px;
+}
+
+.avaliacao-feita .comentario{
+    color:#ccc;
+    font-size:13px;
+    margin-top:6px;
+}
+</style>
+</head>
+<body>
+
+<div class="chat-header">
+    <div>
+        <h1>💬 Chat do Pedido #{{ pedido['id'] }}</h1>
+        <div class="pedido-info">Total: R$ {{ "%.2f"|format(pedido['total']) }} · {{ pedido['criado_em'] }}</div>
+    </div>
+    <a href="{{ url_for('index') }}" class="back-btn">Voltar</a>
+</div>
+
+<div class="itens-resumo">
+    <strong>Itens do pedido:</strong>
+    {% for item in itens %}
+        {{ item['nome'] }} (x{{ item['quantidade'] }}){% if not loop.last %}, {% endif %}
+    {% endfor %}
+</div>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="avaliacao-box" style="border-color:rgba(157,255,0,.3);background:rgba(157,255,0,.05);">
+      {% for msg in messages %}<p style="color:#9dff00;font-size:13px;">{{ msg }}</p>{% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+{% if eh_dono_do_pedido %}
+<div class="avaliacao-box">
+    {% if avaliacao %}
+        <h3>Sua avaliação deste pedido</h3>
+        <div class="avaliacao-feita">{{ "★" * avaliacao['nota'] }}{{ "☆" * (5 - avaliacao['nota']) }}</div>
+        {% if avaliacao['comentario'] %}
+        <div class="comentario">"{{ avaliacao['comentario'] }}"</div>
+        {% endif %}
+    {% else %}
+        <h3>⭐ Avalie este pedido</h3>
+        <form method="POST" action="{{ url_for('avaliar_pedido', pedido_id=pedido['id']) }}" id="avaliacaoForm">
+            <input type="hidden" name="nota" id="notaInput" value="0">
+            <div class="estrelas-input" id="estrelasInput">
+                <span data-valor="1">★</span>
+                <span data-valor="2">★</span>
+                <span data-valor="3">★</span>
+                <span data-valor="4">★</span>
+                <span data-valor="5">★</span>
+            </div>
+            <textarea name="comentario" maxlength="1000" placeholder="Conte como foi sua experiência (opcional)"></textarea>
+            <button type="submit">Enviar avaliação</button>
+        </form>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="chat-messages" id="chatMessages">
+    <div class="empty-chat" id="emptyChat">Carregando mensagens...</div>
+</div>
+
+<form class="chat-input-bar" id="chatForm">
+    <input type="text" id="mensagemInput" placeholder="Digite sua mensagem..." maxlength="1000" autocomplete="off" required>
+    <button type="submit">➤</button>
+</form>
+
+<script>
+const pedidoId = {{ pedido['id'] }};
+const autorTipoAtual = "{{ autor_tipo_atual }}";
+const chatMessages = document.getElementById('chatMessages');
+const emptyChat = document.getElementById('emptyChat');
+const chatForm = document.getElementById('chatForm');
+const mensagemInput = document.getElementById('mensagemInput');
+
+let ultimoId = 0;
+let primeiraCarga = true;
+
+function formatarHora(isoString) {
+    // O backend salva em UTC no formato "YYYY-MM-DD HH:MM:SS".
+    // Convertendo explicitamente pra UTC e deixando o navegador exibir
+    // no fuso horário local da pessoa (ex: Brasília = UTC-3).
+    const isoUtc = isoString.replace(' ', 'T') + 'Z';
+    const data = new Date(isoUtc);
+
+    if (isNaN(data.getTime())) return '';
+
+    return data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+function iconeAutor(autorTipo) {
+    if (autorTipo === 'vendedor') return '🛍️ ';
+    if (autorTipo === 'bot') return '🤖 ';
+    return '👤 ';
+}
+
+function renderMensagem(msg) {
+    const div = document.createElement('div');
+    div.className = `msg ${msg.autor_tipo}`;
+    div.innerHTML = `
+        <div class="autor">${iconeAutor(msg.autor_tipo)}${escapeHtml(msg.autor_nome)}</div>
+        <div class="texto">${escapeHtml(msg.mensagem)}</div>
+        <div class="hora">${formatarHora(msg.criado_em)}</div>
+    `;
+    chatMessages.appendChild(div);
+    ultimoId = Math.max(ultimoId, msg.id);
+}
+
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str ?? '';
+    return div.innerHTML;
+}
+
+async function buscarMensagens() {
+    try {
+        const resp = await fetch(`/chat/${pedidoId}/mensagens?desde=${ultimoId}`);
+        const data = await resp.json();
+
+        if (primeiraCarga) {
+            emptyChat.remove();
+            primeiraCarga = false;
+            if (data.mensagens.length === 0) {
+                chatMessages.innerHTML = '<div class="empty-chat">Nenhuma mensagem ainda. Diga olá! 👋</div>';
+                return;
+            }
+        }
+
+        if (data.mensagens.length > 0) {
+            const placeholder = chatMessages.querySelector('.empty-chat');
+            if (placeholder) placeholder.remove();
+
+            const estavaNoFinal = chatMessages.scrollTop + chatMessages.clientHeight >= chatMessages.scrollHeight - 50;
+
+            data.mensagens.forEach(renderMensagem);
+
+            if (estavaNoFinal || primeiraCarga) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+    } catch (err) {
+        console.error('Erro ao buscar mensagens:', err);
+    }
+}
+
+chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const texto = mensagemInput.value.trim();
+    if (!texto) return;
+
+    mensagemInput.value = '';
+    mensagemInput.disabled = true;
+
+    try {
+        const resp = await fetch(`/chat/${pedidoId}/enviar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `mensagem=${encodeURIComponent(texto)}`,
+        });
+        const data = await resp.json();
+
+        if (data.erro) {
+            alert(data.erro);
+        } else {
+            const placeholder = chatMessages.querySelector('.empty-chat');
+            if (placeholder) placeholder.remove();
+            renderMensagem(data.mensagem);
+
+            // Se o bot respondeu na mesma chamada, mostra a resposta dele também.
+            // O ultimoId já fica atualizado por renderMensagem, então o próximo
+            // polling não vai buscar essa mensagem de novo.
+            if (data.resposta_bot) {
+                renderMensagem(data.resposta_bot);
+            }
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    } catch (err) {
+        alert('Erro ao enviar mensagem. Tente novamente.');
+    } finally {
+        mensagemInput.disabled = false;
+        mensagemInput.focus();
+    }
+});
+
+// Busca inicial + polling a cada 3 segundos por mensagens novas
+buscarMensagens();
+setInterval(buscarMensagens, 3000);
+
+// --- Seleção de estrelas no formulário de avaliação ---
+const estrelasInput = document.getElementById('estrelasInput');
+const notaInput = document.getElementById('notaInput');
+const avaliacaoForm = document.getElementById('avaliacaoForm');
+
+if (estrelasInput) {
+    const estrelas = estrelasInput.querySelectorAll('span');
+
+    function pintarEstrelas(valor) {
+        estrelas.forEach(e => {
+            e.classList.toggle('selecionada', Number(e.dataset.valor) <= valor);
+        });
+    }
+
+    estrelas.forEach(estrela => {
+        estrela.addEventListener('click', () => {
+            const valor = Number(estrela.dataset.valor);
+            notaInput.value = valor;
+            pintarEstrelas(valor);
+        });
+        estrela.addEventListener('mouseenter', () => pintarEstrelas(Number(estrela.dataset.valor)));
+        estrela.addEventListener('mouseleave', () => pintarEstrelas(Number(notaInput.value)));
+    });
+
+    avaliacaoForm.addEventListener('submit', (e) => {
+        if (Number(notaInput.value) < 1) {
+            e.preventDefault();
+            alert('Escolha uma nota de 1 a 5 estrelas antes de enviar.');
+        }
+    });
+}
+</script>
+
+</body>
+</html>
