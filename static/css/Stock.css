@@ -13,7 +13,7 @@ body{
 
 .header{
     width:100%;
-    padding:20px 40px;
+    padding:14px 16px;
     display:flex;
     justify-content:space-between;
     align-items:center;
@@ -22,7 +22,7 @@ body{
 }
 
 .logo{
-    font-size:28px;
+    font-size:20px;
     font-weight:bold;
     color:#9d7dff;
 }
@@ -31,9 +31,10 @@ body{
     text-decoration:none;
     color:white;
     background:#7c3aed;
-    padding:10px 20px;
+    padding:9px 14px;
     border-radius:10px;
     transition:.3s;
+    font-size:13px;
 }
 
 .back-btn:hover{
@@ -42,17 +43,18 @@ body{
 
 .title{
     text-align:center;
-    margin:40px 20px 20px;
+    margin:24px 16px 14px;
 }
 
 .title h1{
-    font-size:38px;
+    font-size:26px;
     color:#9d7dff;
 }
 
 .title p{
     color:#aaa;
-    margin-top:10px;
+    margin-top:8px;
+    font-size:13px;
 }
 
 /* ABAS */
@@ -60,20 +62,20 @@ body{
 .tabs{
     display:flex;
     justify-content:center;
-    gap:12px;
-    margin:30px auto;
+    gap:8px;
+    margin:20px auto;
     flex-wrap:wrap;
-    padding:0 20px;
+    padding:0 12px;
 }
 
 .tab-btn{
     border:1px solid rgba(255,255,255,.12);
     background:#171a23;
     color:#ccc;
-    padding:12px 26px;
-    border-radius:14px;
+    padding:10px 18px;
+    border-radius:12px;
     cursor:pointer;
-    font-size:15px;
+    font-size:13px;
     font-weight:bold;
     transition:.25s;
 }
@@ -106,76 +108,74 @@ body{
 
 .status{
     text-align:center;
-    margin:0 20px 25px;
+    margin:0 16px 18px;
     color:#888;
-    font-size:14px;
+    font-size:13px;
 }
 
-/* GRID DE ITENS (compartilhado pelas 3 categorias) */
+/* GRID */
 
 .stock-container{
-    width:90%;
+    width:94%;
     max-width:1300px;
     margin:0 auto 50px;
     display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
-    gap:25px;
+    grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+    gap:14px;
 }
 
 .stock-card{
     background:#1b1f2a;
-    border-radius:20px;
-    padding:25px;
+    border-radius:16px;
+    padding:18px 14px;
     text-align:center;
     transition:.3s;
     border:1px solid rgba(255,255,255,.08);
 }
 
 .stock-card:hover{
-    transform:translateY(-8px);
+    transform:translateY(-5px);
 }
 
 .stock-card img{
-    width:120px;
-    height:120px;
+    width:90px;
+    height:90px;
     object-fit:contain;
 }
 
 .stock-card .nome{
-    font-size:22px;
-    margin-top:15px;
+    font-size:17px;
+    margin-top:12px;
     font-weight:bold;
 }
 
 .stock-card .stock-qtd{
-    margin-top:12px;
-    font-size:16px;
+    margin-top:10px;
+    font-size:13px;
 }
 
 .stock-card .preco{
-    margin-top:8px;
-    font-size:20px;
+    margin-top:6px;
+    font-size:16px;
     font-weight:bold;
 }
 
 .stock-card.pets .stock-qtd{ color:#d9a86c; }
 .stock-card.pets .preco{ color:#ffcf8f; }
-
 .stock-card.seeds .stock-qtd{ color:#69ff8f; }
 .stock-card.seeds .preco{ color:#9dffb0; }
-
 .stock-card.gears .stock-qtd{ color:#9d7dff; }
 .stock-card.gears .preco{ color:#bfa6ff; }
 
 .stock-card .buy-btn{
-    margin-top:16px;
+    margin-top:12px;
     width:100%;
     border:none;
-    padding:12px;
+    padding:10px;
     border-radius:10px;
     cursor:pointer;
     font-weight:bold;
-    font-size:14px;
+    font-size:13px;
     transition:.25s;
 }
 
@@ -196,22 +196,17 @@ body{
 
 .footer{
     text-align:center;
-    padding:40px;
+    padding:30px;
     color:#777;
+    font-size:13px;
 }
 
-/* RESPONSIVO */
-@media(max-width:600px){
-    .header{
-        padding:15px 20px;
+@media(max-width:360px){
+    .stock-container{
+        grid-template-columns:repeat(2, 1fr);
     }
-
-    .title h1{
-        font-size:26px;
-    }
-
-    .tab-btn{
-        padding:10px 18px;
-        font-size:13px;
+    .stock-card img{
+        width:70px;
+        height:70px;
     }
 }

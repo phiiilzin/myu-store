@@ -13,7 +13,7 @@ body{
 
 .header{
     width:100%;
-    padding:20px 40px;
+    padding:14px 16px;
     display:flex;
     justify-content:space-between;
     align-items:center;
@@ -22,7 +22,7 @@ body{
 }
 
 .logo{
-    font-size:28px;
+    font-size:20px;
     font-weight:bold;
     color:#9d7dff;
 }
@@ -31,9 +31,10 @@ body{
     text-decoration:none;
     color:white;
     background:#7c3aed;
-    padding:10px 20px;
+    padding:9px 14px;
     border-radius:10px;
     transition:.3s;
+    font-size:13px;
 }
 
 .back-btn:hover{
@@ -42,23 +43,23 @@ body{
 
 .title{
     text-align:center;
-    margin:40px 20px 20px;
+    margin:24px 16px 14px;
 }
 
 .title h1{
-    font-size:38px;
+    font-size:26px;
     color:#9d7dff;
 }
 
 .content-card{
-    width:90%;
+    width:94%;
     max-width:800px;
-    margin:30px auto 60px;
+    margin:20px auto 50px;
     background:#1b1f2a;
     border:1px solid rgba(255,255,255,.08);
-    border-radius:20px;
-    padding:40px;
-    font-size:17px;
+    border-radius:16px;
+    padding:22px;
+    font-size:15px;
     line-height:1.8;
     color:#ddd;
     white-space:pre-wrap;
@@ -66,22 +67,7 @@ body{
 
 .footer{
     text-align:center;
-    padding:40px;
+    padding:30px;
     color:#777;
-}
-
-/* RESPONSIVO */
-@media(max-width:600px){
-    .header{
-        padding:15px 20px;
-    }
-
-    .title h1{
-        font-size:26px;
-    }
-
-    .content-card{
-        padding:22px;
-        font-size:15px;
-    }
+    font-size:13px;
 }

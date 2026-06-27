@@ -6,7 +6,6 @@
     font-family:'Segoe UI', sans-serif;
 }
 
-/* FUNDO */
 body{
     min-height:100vh;
     background:linear-gradient(135deg,#0f0f0f,#1a1a1a);
@@ -16,79 +15,81 @@ body{
 /* HEADER */
 .top-bar{
     text-align:center;
-    padding:40px 20px 10px;
+    padding:28px 16px 10px;
 }
 
 .top-bar h1{
-    font-size:44px;
+    font-size:30px;
     font-weight:900;
     color:#9dff00;
     text-shadow:0 0 18px rgba(157,255,0,.4);
 }
 
 .top-bar p{
-    margin-top:10px;
+    margin-top:8px;
     color:#cfcfcf;
+    font-size:14px;
 }
 
 /* CONTAINER */
 .login-container{
     display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    gap:40px;
-    padding:30px;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+    padding:16px;
 }
 
 /* CARD LOGIN */
 .login-card{
     width:100%;
-    max-width:500px;
+    max-width:480px;
     background:rgba(20,20,20,.95);
     border:1px solid rgba(157,255,0,.25);
-    border-radius:25px;
-    padding:35px;
+    border-radius:20px;
+    padding:24px;
     box-shadow:0 0 35px rgba(157,255,0,.12);
 }
 
 /* HEADER LOGIN */
 .login-header{
     text-align:center;
-    margin-bottom:25px;
+    margin-bottom:20px;
 }
 
 .login-header h2{
-    font-size:30px;
-    margin-bottom:10px;
+    font-size:24px;
+    margin-bottom:8px;
 }
 
 .login-header p{
     color:#bdbdbd;
     line-height:1.5;
+    font-size:14px;
 }
 
 /* FORM */
 .login-form{
     display:flex;
     flex-direction:column;
-    gap:15px;
+    gap:14px;
 }
 
-/* INPUTS */
 .input-group{
     display:flex;
     flex-direction:column;
-    gap:6px;
+    gap:5px;
 }
 
 .input-group input{
-    height:52px;
-    border-radius:12px;
+    height:48px;
+    border-radius:10px;
     border:1px solid #333;
     background:#252525;
     color:white;
     padding:0 12px;
     outline:none;
+    font-size:15px;
 }
 
 .input-group input:focus{
@@ -96,12 +97,11 @@ body{
     box-shadow:0 0 15px rgba(157,255,0,.25);
 }
 
-/* OPTIONS */
 .options{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    font-size:14px;
+    font-size:13px;
     color:#bbb;
 }
 
@@ -110,15 +110,15 @@ body{
     text-decoration:none;
 }
 
-/* BOTÃO */
 .login-btn{
-    height:52px;
+    height:50px;
     border:none;
     border-radius:12px;
     background:linear-gradient(180deg,#9dff00,#53c400);
     font-weight:900;
     cursor:pointer;
     box-shadow:0 0 20px rgba(157,255,0,.25);
+    font-size:16px;
 }
 
 .login-btn:hover{
@@ -127,56 +127,58 @@ body{
 
 /* SEGURANÇA */
 .security-info{
-    margin-top:25px;
-    padding:18px;
+    margin-top:20px;
+    padding:14px;
     background:rgba(255,255,255,.03);
-    border-radius:12px;
+    border-radius:10px;
 }
 
 .security-info h3{
-    margin-bottom:10px;
+    margin-bottom:8px;
+    font-size:15px;
 }
 
 .security-info ul{
     list-style:none;
     color:#bbb;
-    font-size:14px;
+    font-size:13px;
 }
 
 /* INFO CARD */
 .info-card{
     width:100%;
-    max-width:500px;
-    padding:35px;
+    max-width:480px;
+    padding:24px;
     background:rgba(20,20,20,.95);
-    border-radius:25px;
+    border-radius:20px;
     border:1px solid rgba(157,255,0,.15);
 }
 
 .info-card h2{
     color:#9dff00;
-    margin-bottom:15px;
+    margin-bottom:12px;
+    font-size:20px;
 }
 
 .info-card p{
     color:#ccc;
-    margin-bottom:25px;
+    margin-bottom:20px;
     line-height:1.5;
+    font-size:14px;
 }
 
-/* FEATURES */
 .feature{
     display:flex;
     gap:12px;
-    margin-bottom:15px;
+    margin-bottom:14px;
 }
 
 .feature span{
-    font-size:26px;
+    font-size:22px;
 }
 
 .feature h3{
-    font-size:16px;
+    font-size:15px;
 }
 
 /* ERRO */
@@ -187,7 +189,8 @@ body{
     padding:10px;
     border-radius:10px;
     text-align:center;
-    margin-bottom:15px;
+    margin-bottom:12px;
+    font-size:14px;
 }
 
 /* FOOTER */
@@ -195,26 +198,5 @@ body{
     text-align:center;
     padding:20px;
     color:#888;
-}
-
-/* RESPONSIVO */
-@media(max-width:1000px){
-    .login-container{
-        flex-direction:column;
-        align-items:center;
-    }
-}
-
-@media(max-width:480px){
-    .login-container{
-        padding:15px;
-    }
-
-    .login-card, .info-card{
-        padding:22px;
-    }
-
-    .top-bar h1{
-        font-size:28px;
-    }
+    font-size:13px;
 }

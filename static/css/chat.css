@@ -17,56 +17,58 @@ body{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:18px 25px;
+    padding:14px 16px;
     background:rgba(20,20,20,.97);
     border-bottom:1px solid rgba(157,255,0,.2);
     box-shadow:0 0 20px rgba(157,255,0,.08);
 }
 
 .chat-header h1{
-    font-size:20px;
+    font-size:17px;
     color:#9dff00;
 }
 
 .chat-header .pedido-info{
-    font-size:13px;
+    font-size:12px;
     color:#aaa;
-    margin-top:4px;
+    margin-top:3px;
 }
 
 .back-btn{
     text-decoration:none;
     color:white;
     background:#252525;
-    padding:8px 16px;
+    padding:7px 13px;
     border-radius:10px;
-    font-size:14px;
+    font-size:13px;
+    flex-shrink:0;
 }
 
 .chat-messages{
     flex:1;
     overflow-y:auto;
-    padding:20px;
+    padding:14px;
     display:flex;
     flex-direction:column;
-    gap:12px;
-    max-width:800px;
+    gap:10px;
+    max-width:100%;
     width:100%;
     margin:0 auto;
+    -webkit-overflow-scrolling:touch;
 }
 
 .msg{
-    max-width:75%;
-    padding:12px 16px;
-    border-radius:16px;
+    max-width:85%;
+    padding:10px 14px;
+    border-radius:14px;
     font-size:14px;
     line-height:1.4;
 }
 
 .msg .autor{
-    font-size:11px;
+    font-size:10px;
     font-weight:bold;
-    margin-bottom:4px;
+    margin-bottom:3px;
     opacity:.8;
     text-transform:uppercase;
 }
@@ -74,7 +76,7 @@ body{
 .msg .hora{
     font-size:10px;
     opacity:.5;
-    margin-top:4px;
+    margin-top:3px;
 }
 
 .msg.cliente{
@@ -95,7 +97,7 @@ body{
 
 .msg.bot{
     align-self:flex-start;
-    background:linear-gradient(135deg, rgba(124,58,237,.18), rgba(124,58,237,.08));
+    background:linear-gradient(135deg,rgba(124,58,237,.18),rgba(124,58,237,.08));
     border:1px solid rgba(124,58,237,.35);
 }
 
@@ -106,30 +108,29 @@ body{
 .empty-chat{
     text-align:center;
     color:#777;
-    padding:40px 20px;
+    padding:40px 16px;
 }
 
 .chat-input-bar{
     display:flex;
-    gap:10px;
-    padding:15px 20px;
+    gap:8px;
+    padding:12px 14px;
     background:rgba(20,20,20,.97);
     border-top:1px solid rgba(157,255,0,.15);
-    max-width:800px;
     width:100%;
-    margin:0 auto;
 }
 
 .chat-input-bar input{
     flex:1;
-    height:48px;
-    border-radius:24px;
+    height:44px;
+    border-radius:22px;
     border:1px solid #333;
     background:#252525;
     color:white;
-    padding:0 18px;
+    padding:0 16px;
     outline:none;
     font-size:14px;
+    min-width:0;
 }
 
 .chat-input-bar input:focus{
@@ -137,58 +138,27 @@ body{
 }
 
 .chat-input-bar button{
-    width:48px;
-    height:48px;
+    width:44px;
+    height:44px;
     border:none;
     border-radius:50%;
     background:linear-gradient(180deg,#9dff00,#53c400);
     color:#0a0a0a;
-    font-size:18px;
+    font-size:16px;
     cursor:pointer;
+    flex-shrink:0;
 }
 
 .itens-resumo{
-    max-width:800px;
-    margin:15px auto 0;
-    width:100%;
+    margin:12px 14px 0;
     background:rgba(157,255,0,.05);
     border:1px solid rgba(157,255,0,.15);
-    border-radius:14px;
-    padding:14px 18px;
+    border-radius:12px;
+    padding:12px 14px;
     font-size:13px;
     color:#ccc;
 }
 
 .itens-resumo strong{
     color:#9dff00;
-}
-
-/* RESPONSIVO */
-@media(max-width:480px){
-    .chat-header{
-        padding:14px 16px;
-    }
-
-    .chat-header h1{
-        font-size:17px;
-    }
-
-    .chat-messages{
-        padding:14px;
-        gap:10px;
-    }
-
-    .msg{
-        max-width:88%;
-        font-size:13px;
-    }
-
-    .chat-input-bar{
-        padding:12px;
-    }
-
-    .itens-resumo{
-        font-size:12px;
-        padding:12px 14px;
-    }
 }
