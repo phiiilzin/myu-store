@@ -9,63 +9,122 @@
     <style>
         .ofertas-grid{
             display:grid;
-            grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
-            gap:25px;
+            grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
+            gap:14px;
         }
         .oferta-card{
             background:#1b1f2a;
-            border-radius:20px;
-            padding:25px;
+            border-radius:16px;
+            padding:16px;
             text-align:center;
             transition:.3s;
             border:1px solid rgba(255,209,102,.25);
         }
         .oferta-card:hover{
-            transform:translateY(-8px);
+            transform:translateY(-5px);
         }
         .oferta-card img{
-            width:120px;
-            height:120px;
+            width:90px;
+            height:90px;
             object-fit:contain;
         }
         .oferta-card .nome{
-            font-size:22px;
-            margin-top:15px;
+            font-size:16px;
+            margin-top:10px;
             font-weight:bold;
             color:white;
         }
         .oferta-card .stock-info{
-            margin-top:10px;
-            font-size:15px;
+            margin-top:6px;
+            font-size:13px;
             color:#9d7dff;
         }
         .oferta-card .preco-original{
             text-decoration:line-through;
             color:#888;
-            font-size:14px;
-            margin-top:8px;
+            font-size:12px;
+            margin-top:6px;
         }
         .oferta-card .preco-promo{
-            font-size:24px;
+            font-size:18px;
             font-weight:bold;
             color:#ffd166;
             margin-top:4px;
         }
         .oferta-card .buy-btn{
-            margin-top:16px;
+            margin-top:12px;
             width:100%;
             border:none;
-            padding:12px;
+            padding:10px;
             border-radius:10px;
             cursor:pointer;
             font-weight:bold;
-            font-size:14px;
+            font-size:13px;
             background:#ffd166;
             color:#1a1208;
             transition:.25s;
         }
         .oferta-card .buy-btn:hover{
             transform:translateY(-2px);
+        }
+
+        /* HAMBURGUER */
+        .hamburguer{
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            gap:5px;
+            width:36px;
+            height:36px;
+            cursor:pointer;
+            flex-shrink:0;
+            padding:4px;
+            z-index:99999;
+        }
+        .hamburguer span{
+            display:block;
+            width:100%;
+            height:3px;
+            background:white;
+            border-radius:3px;
+            transition:.3s;
+        }
+        .hamburguer.aberto span:nth-child(1){
+            transform:translateY(8px) rotate(45deg);
+        }
+        .hamburguer.aberto span:nth-child(2){
+            opacity:0;
+        }
+        .hamburguer.aberto span:nth-child(3){
+            transform:translateY(-8px) rotate(-45deg);
+        }
+
+        /* MENU DROPDOWN */
+        .menu-dropdown{
+            display:none;
+            flex-direction:column;
+            position:fixed;
+            top:60px;
+            left:0;
+            width:100%;
+            background:rgba(10,10,10,.97);
+            border-bottom:1px solid rgba(157,255,0,.2);
+            padding:12px 16px;
+            gap:8px;
+            z-index:9998;
+        }
+        .menu-dropdown.aberto{
+            display:flex;
+        }
+        .menu-dropdown a{
+            color:white;
+            text-decoration:none;
+            background:#111;
+            padding:12px 16px;
+            border-radius:10px;
+            border:1px solid #9dff00;
+            font-size:15px;
+            font-weight:600;
         }
     </style>
 </head>
@@ -74,16 +133,11 @@
     <!-- MENU -->
     <header class="navbar">
 
-        <nav>
-            <ul class="menu">
-                <li><a href="{{ url_for('duvidas') }}">Dúvidas</a></li>
-                <li><a href="{{ url_for('trades_lista') }}">Trades</a></li>
-                <li><a href="{{ url_for('sobre_nos') }}">Sobre Nós</a></li>
-                <li><a href="{{ url_for('avaliacoes_lista') }}">Avaliações</a></li>
-                <li><a href="{{ url_for('suporte') }}">Suporte</a></li>
-                <li><a href="https://discord.gg/rjrM2FtwF">Discord</a></li>
-            </ul>
-        </nav>
+        <div class="hamburguer" id="hamburguer" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
 
         <div class="actions">
             <button class="cart" onclick="window.location.href='{{ url_for('carrinho') }}'">
@@ -102,6 +156,16 @@
         </div>
 
     </header>
+
+    <!-- MENU DROPDOWN -->
+    <div class="menu-dropdown" id="menuDropdown">
+        <a href="{{ url_for('duvidas') }}">❓ Dúvidas</a>
+        <a href="{{ url_for('trades_lista') }}">🔄 Trades</a>
+        <a href="{{ url_for('sobre_nos') }}">ℹ️ Sobre Nós</a>
+        <a href="{{ url_for('avaliacoes_lista') }}">⭐ Avaliações</a>
+        <a href="{{ url_for('suporte') }}">🎧 Suporte</a>
+        <a href="https://discord.gg/rjrM2FtwF">💬 Discord</a>
+    </div>
 
     <img src="{{ url_for('static', filename='assets/fundo.png') }}" class="fundo">
     <img src="{{ url_for('static', filename='assets/logo.png') }}" class="logo">
@@ -125,48 +189,20 @@
                 🛒 COMPRAR AGORA
             </button>
 
-            <div class="info-boxes">
-
-                <div class="info">
-                    ⚡
-                    <div>
-                        <strong>ENTREGA RÁPIDA</strong>
-                        <p>Automática e instantânea</p>
-                    </div>
-                </div>
-
-                <div class="info">
-                    🛡️
-                    <div>
-                        <strong>100% SEGURO</strong>
-                        <p>Compras protegidas</p>
-                    </div>
-                </div>
-
-                <div class="info">
-                    👥
-                    <div>
-                        <strong>+10.000 CLIENTES</strong>
-                        <p>Confiança e qualidade</p>
-                    </div>
-                </div>
-
-            </div>
-
         </div>
 
     </section>
 
-    <!-- OFERTAS DO DIA: um card individual para cada oferta -->
-    <section style="width:90%;max-width:1300px;margin:50px auto;">
-        <h2 style="text-align:center;color:#ffd166;font-size:32px;margin-bottom:30px;">🔥 Ofertas do Dia</h2>
+    <!-- OFERTAS DO DIA -->
+    <section style="width:94%;max-width:1300px;margin:24px auto;">
+        <h2 style="text-align:center;color:#ffd166;font-size:24px;margin-bottom:16px;">🔥 Ofertas do Dia</h2>
 
         {% if ofertas %}
         <div class="ofertas-grid">
             {% for oferta in ofertas %}
             <div class="oferta-card">
                 {% if oferta.emoji %}
-                <div style="font-size:64px;line-height:1;margin-bottom:5px;">{{ oferta.emoji }}</div>
+                <div style="font-size:52px;line-height:1;margin-bottom:5px;">{{ oferta.emoji }}</div>
                 {% elif oferta.imagem %}
                 <img src="{{ url_for('static', filename=oferta.imagem) }}" onerror="this.style.display='none'">
                 {% endif %}
@@ -192,6 +228,52 @@
         <p style="text-align:center;color:#888;">Nenhuma oferta no momento. Volte em breve!</p>
         {% endif %}
     </section>
+
+    <!-- INFO BOXES -->
+    <div class="info-boxes" style="width:94%;max-width:1300px;margin:0 auto 40px;">
+
+        <div class="info">
+            ⚡
+            <div>
+                <strong>ENTREGA RÁPIDA</strong>
+                <p>Automática e instantânea</p>
+            </div>
+        </div>
+
+        <div class="info">
+            🛡️
+            <div>
+                <strong>100% SEGURO</strong>
+                <p>Compras protegidas</p>
+            </div>
+        </div>
+
+        <div class="info">
+            👥
+            <div>
+                <strong>+10.000 CLIENTES</strong>
+                <p>Confiança e qualidade</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function toggleMenu(){
+            const menu = document.getElementById('menuDropdown');
+            const btn = document.getElementById('hamburguer');
+            menu.classList.toggle('aberto');
+            btn.classList.toggle('aberto');
+        }
+
+        // Fecha o menu ao clicar em um link
+        document.querySelectorAll('.menu-dropdown a').forEach(a => {
+            a.addEventListener('click', () => {
+                document.getElementById('menuDropdown').classList.remove('aberto');
+                document.getElementById('hamburguer').classList.remove('aberto');
+            });
+        });
+    </script>
 
 </body>
 </html>
