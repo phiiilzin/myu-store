@@ -6,3 +6,4 @@ gunicorn>=21.2,<23.0
 # seção "Notificações push"). Sem essa biblioteca instalada, o site funciona
 # normalmente, só sem enviar notificações.
 firebase-admin>=6.5,<7.0
+
