@@ -220,6 +220,7 @@ chatForm.addEventListener('submit', async (e) => {
 
     mensagemInput.value = '';
     mensagemInput.disabled = true;
+    mensagemInput.blur(); // fecha o teclado no celular assim que envia
 
     try {
         const resp = await fetch(`/chat/${pedidoId}/enviar`, {
@@ -249,13 +250,26 @@ chatForm.addEventListener('submit', async (e) => {
         alert('Erro ao enviar mensagem. Tente novamente.');
     } finally {
         mensagemInput.disabled = false;
-        mensagemInput.focus();
+        // Não chama .focus() aqui de propósito: se focasse de novo, o
+        // teclado do celular abriria na hora, anulando o blur() acima.
     }
 });
 
 // Busca inicial + polling a cada 3 segundos por mensagens novas
 buscarMensagens();
 setInterval(buscarMensagens, 3000);
+
+// Navegadores mobile pausam/reduzem o setInterval quando a aba não está
+// em primeiro plano (troca de app, tela travada, etc.). Por isso, sempre
+// que a aba volta a ficar visível ou a janela recebe foco, buscamos
+// mensagens novas na hora — sem isso, só atualizaria com refresh manual.
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        buscarMensagens();
+    }
+});
+window.addEventListener('focus', buscarMensagens);
+window.addEventListener('pageshow', buscarMensagens);
 
 // --- Seleção de estrelas no formulário de avaliação ---
 const estrelasInput = document.getElementById('estrelasInput');
