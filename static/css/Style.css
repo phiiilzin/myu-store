@@ -109,18 +109,33 @@ body{
 }
 
 .hero-content h2{
-    font-size: 20px;
-    font-weight: 800;
-    color: white;
-    text-shadow: 0 4px 10px rgba(0,0,0,.7);
+    font-family:'Fredoka', 'Segoe UI', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #cfe8b0;
+    text-shadow: 0 2px 8px rgba(0,0,0,.6);
 }
 
 .hero-content h1{
-    font-size: 52px;
-    font-weight: 900;
-    line-height: 1;
+    font-family:'Fredoka', 'Segoe UI', sans-serif;
+    font-size: 58px;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: 1px;
     color: white;
-    text-shadow: 0 5px 15px rgba(0,0,0,.8);
+    text-shadow: 0 5px 18px rgba(0,0,0,.85);
+    margin-top: 4px;
+}
+
+.hero-content h1 span{
+    display: inline-block;
+    background: linear-gradient(180deg, #c3ff5c, #9dff00 55%, #5fbf00);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 22px rgba(157,255,0,.65);
 }
 
 .hero-content p{
@@ -337,7 +352,7 @@ body{
 .card-trades button{ background: linear-gradient(180deg,#ba55ff,#7b1fff); }
 
 @media(max-width:360px){
-    .hero-content h1{ font-size: 40px; }
+    .hero-content h1{ font-size: 44px; }
     .card-pets, .card-seeds, .card-gears, .card-trades{
         width: 160px;
         min-width: 160px;

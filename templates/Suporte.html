@@ -16,7 +16,10 @@
     {% if eh_painel_admin %}
     <a href="{{ url_for('suporte_lista_conversas') }}" class="back-btn">Voltar</a>
     {% else %}
-    <a href="{{ url_for('index') }}" class="back-btn">Voltar</a>
+    <div style="display:flex;gap:8px;">
+        <a href="{{ url_for('carrinho') }}" class="back-btn" style="background:#9dff00;color:#0a0a0a;">🛒 Carrinho</a>
+        <a href="{{ url_for('index') }}" class="back-btn">Voltar</a>
+    </div>
     {% endif %}
 </div>
 

@@ -69,6 +69,7 @@ body{
 .section{
     background:rgba(20,20,20,.95);
     border:1px solid rgba(157,255,0,.15);
+    border-left:4px solid var(--accent, #9dff00);
     border-radius:16px;
     padding:18px;
     box-shadow:0 0 25px rgba(157,255,0,.08);
@@ -76,8 +77,83 @@ body{
 
 .section h2{
     margin-bottom:16px;
-    color:#9dff00;
+    color:var(--accent, #9dff00);
     font-size:18px;
+}
+
+/* Cada seção do Painel Admin tem sua própria cor de destaque, pra ficar
+   mais fácil de identificar rapidamente qual bloco é qual — vendedor
+   também vê a mesma cor da categoria em "Ofertas do Dia", batendo com o
+   que o cliente vê na home. */
+.section-pedidos{
+    --accent:#9dff00;
+    box-shadow:0 0 25px rgba(157,255,0,.08);
+}
+
+.section-sobre{
+    --accent:#4dc4ff;
+    box-shadow:0 0 25px rgba(77,196,255,.08);
+}
+
+.section-bot{
+    --accent:#b388ff;
+    box-shadow:0 0 25px rgba(179,136,255,.08);
+}
+
+.section-seeds{
+    --accent:#2ecc71;
+    box-shadow:0 0 25px rgba(46,204,113,.08);
+}
+
+.section-gears{
+    --accent:#4da6ff;
+    box-shadow:0 0 25px rgba(77,166,255,.08);
+}
+
+.section-pets{
+    --accent:#ff9f43;
+    box-shadow:0 0 25px rgba(255,159,67,.08);
+}
+
+.section-ofertas{
+    --accent:#ffd166;
+    box-shadow:0 0 25px rgba(255,209,102,.08);
+}
+
+.section button{
+    background:linear-gradient(180deg,var(--accent, #9dff00),var(--accent, #53c400));
+    color:#0a0a0a;
+}
+
+.section .form-grid input:focus{
+    border-color:var(--accent, #9dff00);
+    box-shadow:0 0 10px color-mix(in srgb, var(--accent, #9dff00) 35%, transparent);
+}
+
+/* Badge de categoria na tabela de Ofertas do Dia — mesmas cores usadas
+   na home pro cliente (cat-pets/cat-seeds/cat-gears), pra vendedor e
+   cliente reconhecerem a categoria pela mesma cor em qualquer lugar do site. */
+.categoria-badge-adm{
+    display:inline-block;
+    font-size:11px;
+    font-weight:bold;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    padding:2px 8px;
+    border-radius:20px;
+    margin-left:6px;
+}
+.categoria-badge-adm.cat-pets{
+    background:rgba(255,159,67,.15);
+    color:#ff9f43;
+}
+.categoria-badge-adm.cat-seeds{
+    background:rgba(46,204,113,.15);
+    color:#2ecc71;
+}
+.categoria-badge-adm.cat-gears{
+    background:rgba(77,166,255,.15);
+    color:#4da6ff;
 }
 
 /* GRID INPUTS */

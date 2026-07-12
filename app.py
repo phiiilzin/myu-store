@@ -55,6 +55,23 @@ def get_or_create_cart_session_id():
     return session["carrinho_session_id"]
 
 
+def bot_ja_respondeu_isso(db, tabela_mensagens, coluna_fk, valor_fk, texto):
+    """
+    Verifica se o bot já mandou esse EXATO texto antes, nessa mesma sala
+    de chat/conversa de suporte. Usado pra evitar que o bot fique repetindo
+    a mesma resposta várias vezes quando o cliente escreve mensagens
+    parecidas (ex: manda "preço" de novo, ou insiste na mesma dúvida) — a
+    resposta já está visível mais acima na conversa, então não precisa
+    repetir.
+    """
+    existente = db.execute(
+        f"SELECT id FROM {tabela_mensagens} "
+        f"WHERE {coluna_fk} = ? AND autor_tipo = 'bot' AND mensagem = ? LIMIT 1",
+        (valor_fk, texto),
+    ).fetchone()
+    return existente is not None
+
+
 # ------------------------------------------------------------------
 # Páginas públicas
 # ------------------------------------------------------------------
@@ -144,6 +161,13 @@ def avaliar_pedido(pedido_id):
         flash("Só quem fez este pedido pode avaliá-lo.")
         return redirect(url_for("chat_pedido", pedido_id=pedido_id))
 
+    # A opção de avaliar só existe depois que o vendedor libera, normalmente
+    # após finalizar o atendimento/entrega combinada no chat.
+    chat = db.execute("SELECT * FROM chats WHERE pedido_id = ?", (pedido_id,)).fetchone()
+    if not chat or not chat["avaliacao_liberada"]:
+        flash("A avaliação deste pedido ainda não foi liberada pelo vendedor.")
+        return redirect(url_for("chat_pedido", pedido_id=pedido_id))
+
     existente = db.execute("SELECT id FROM avaliacoes WHERE pedido_id = ?", (pedido_id,)).fetchone()
     if existente:
         flash("Este pedido já foi avaliado.")
@@ -171,6 +195,39 @@ def avaliar_pedido(pedido_id):
     db.commit()
 
     flash("Obrigado pela sua avaliação! ⭐")
+    return redirect(url_for("chat_pedido", pedido_id=pedido_id))
+
+
+@app.route("/chat/<int:pedido_id>/liberar-avaliacao", methods=["POST"])
+@login_obrigatorio
+def liberar_avaliacao(pedido_id):
+    """
+    O vendedor libera a opção de avaliação para o cliente — pensado pra ser
+    usado depois que o atendimento no chat termina e a compra já foi
+    finalizada/entregue. Uma vez liberada, fica liberada pra sempre (não dá
+    pra "desliberar"), e a avaliação em si, depois de enviada pelo cliente,
+    é permanente (fica salva no banco e não existe rota de exclusão/edição).
+    """
+    db = get_db()
+
+    pedido = db.execute("SELECT * FROM pedidos WHERE id = ?", (pedido_id,)).fetchone()
+    if not pedido:
+        flash("Pedido não encontrado.")
+        return redirect(url_for("painel_adm"))
+
+    chat = db.execute("SELECT * FROM chats WHERE pedido_id = ?", (pedido_id,)).fetchone()
+    if not chat:
+        cur = db.execute("INSERT INTO chats (pedido_id) VALUES (?)", (pedido_id,))
+        db.commit()
+        chat = db.execute("SELECT * FROM chats WHERE id = ?", (cur.lastrowid,)).fetchone()
+
+    if chat["avaliacao_liberada"]:
+        flash("A avaliação deste pedido já estava liberada.")
+    else:
+        db.execute("UPDATE chats SET avaliacao_liberada = 1 WHERE id = ?", (chat["id"],))
+        db.commit()
+        flash("Avaliação liberada! O cliente já pode avaliar este pedido.")
+
     return redirect(url_for("chat_pedido", pedido_id=pedido_id))
 
 
@@ -327,19 +384,20 @@ def suporte_enviar_mensagem(conversa_id):
 
         texto_bot = bot.gerar_resposta(mensagem, regras_dicts, resposta_padrao)
 
-        cur_bot = db.execute(
-            "INSERT INTO suporte_mensagens (conversa_id, autor_tipo, autor_nome, mensagem) VALUES (?, 'bot', 'Assistente MYU', ?)",
-            (conversa_id, texto_bot),
-        )
-        db.commit()
-        nova_bot = db.execute("SELECT * FROM suporte_mensagens WHERE id = ?", (cur_bot.lastrowid,)).fetchone()
-        resposta_bot = {
-            "id": nova_bot["id"],
-            "autor_tipo": nova_bot["autor_tipo"],
-            "autor_nome": nova_bot["autor_nome"],
-            "mensagem": nova_bot["mensagem"],
-            "criado_em": nova_bot["criado_em"],
-        }
+        if not bot_ja_respondeu_isso(db, "suporte_mensagens", "conversa_id", conversa_id, texto_bot):
+            cur_bot = db.execute(
+                "INSERT INTO suporte_mensagens (conversa_id, autor_tipo, autor_nome, mensagem) VALUES (?, 'bot', 'Assistente MYU', ?)",
+                (conversa_id, texto_bot),
+            )
+            db.commit()
+            nova_bot = db.execute("SELECT * FROM suporte_mensagens WHERE id = ?", (cur_bot.lastrowid,)).fetchone()
+            resposta_bot = {
+                "id": nova_bot["id"],
+                "autor_tipo": nova_bot["autor_tipo"],
+                "autor_nome": nova_bot["autor_nome"],
+                "mensagem": nova_bot["mensagem"],
+                "criado_em": nova_bot["criado_em"],
+            }
 
     resultado = {"mensagem": mensagem_resposta}
     if resposta_bot:
@@ -691,7 +749,9 @@ def chat_pedido(pedido_id):
         autor_tipo_atual=autor_tipo_atual,
         autor_nome_atual=autor_nome_atual,
         eh_dono_do_pedido=eh_dono_do_pedido,
+        eh_vendedor=eh_vendedor,
         avaliacao=avaliacao,
+        avaliacao_liberada=bool(chat["avaliacao_liberada"]),
     )
 
 
@@ -803,19 +863,20 @@ def chat_enviar_mensagem(pedido_id):
 
         texto_bot = bot.gerar_resposta(mensagem, regras_dicts, resposta_padrao)
 
-        cur_bot = db.execute(
-            "INSERT INTO chat_mensagens (chat_id, autor_tipo, autor_nome, mensagem) VALUES (?, 'bot', 'Assistente MYU', ?)",
-            (chat_id, texto_bot),
-        )
-        db.commit()
-        nova_bot = db.execute("SELECT * FROM chat_mensagens WHERE id = ?", (cur_bot.lastrowid,)).fetchone()
-        resposta_bot = {
-            "id": nova_bot["id"],
-            "autor_tipo": nova_bot["autor_tipo"],
-            "autor_nome": nova_bot["autor_nome"],
-            "mensagem": nova_bot["mensagem"],
-            "criado_em": nova_bot["criado_em"],
-        }
+        if not bot_ja_respondeu_isso(db, "chat_mensagens", "chat_id", chat_id, texto_bot):
+            cur_bot = db.execute(
+                "INSERT INTO chat_mensagens (chat_id, autor_tipo, autor_nome, mensagem) VALUES (?, 'bot', 'Assistente MYU', ?)",
+                (chat_id, texto_bot),
+            )
+            db.commit()
+            nova_bot = db.execute("SELECT * FROM chat_mensagens WHERE id = ?", (cur_bot.lastrowid,)).fetchone()
+            resposta_bot = {
+                "id": nova_bot["id"],
+                "autor_tipo": nova_bot["autor_tipo"],
+                "autor_nome": nova_bot["autor_nome"],
+                "mensagem": nova_bot["mensagem"],
+                "criado_em": nova_bot["criado_em"],
+            }
 
     resultado = {"mensagem": mensagem_resposta}
     if resposta_bot:

@@ -73,6 +73,29 @@
     font-size:13px;
     margin-top:6px;
 }
+
+.avaliacao-pendente{
+    color:#999;
+    font-size:13px;
+    margin:0;
+}
+
+.liberar-avaliacao-btn{
+    background:#ffd166;
+    color:#1a1208;
+    border:none;
+    padding:10px 22px;
+    border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
+    font-size:13px;
+}
+
+.avaliacao-liberada-aviso{
+    color:#9dff00;
+    font-size:13px;
+    margin:0;
+}
 </style>
 </head>
 <body>
@@ -108,7 +131,7 @@
         {% if avaliacao['comentario'] %}
         <div class="comentario">"{{ avaliacao['comentario'] }}"</div>
         {% endif %}
-    {% else %}
+    {% elif avaliacao_liberada %}
         <h3>⭐ Avalie este pedido</h3>
         <form method="POST" action="{{ url_for('avaliar_pedido', pedido_id=pedido['id']) }}" id="avaliacaoForm">
             <input type="hidden" name="nota" id="notaInput" value="0">
@@ -121,6 +144,29 @@
             </div>
             <textarea name="comentario" maxlength="1000" placeholder="Conte como foi sua experiência (opcional)"></textarea>
             <button type="submit">Enviar avaliação</button>
+        </form>
+    {% else %}
+        <h3>⭐ Avaliação</h3>
+        <p class="avaliacao-pendente">A opção de avaliar este pedido será liberada pelo vendedor assim que o atendimento for finalizado.</p>
+    {% endif %}
+</div>
+{% endif %}
+
+{% if eh_vendedor %}
+<div class="avaliacao-box">
+    {% if avaliacao %}
+        <h3>Avaliação recebida do cliente</h3>
+        <div class="avaliacao-feita">{{ "★" * avaliacao['nota'] }}{{ "☆" * (5 - avaliacao['nota']) }}</div>
+        {% if avaliacao['comentario'] %}
+        <div class="comentario">"{{ avaliacao['comentario'] }}"</div>
+        {% endif %}
+    {% elif avaliacao_liberada %}
+        <p class="avaliacao-liberada-aviso">✅ Avaliação liberada — aguardando o cliente avaliar.</p>
+    {% else %}
+        <h3>⭐ Avaliação</h3>
+        <p class="avaliacao-pendente">Depois de finalizar o atendimento e a compra, libere a avaliação para o cliente.</p>
+        <form method="POST" action="{{ url_for('liberar_avaliacao', pedido_id=pedido['id']) }}">
+            <button type="submit" class="liberar-avaliacao-btn">Liberar avaliação para o cliente</button>
         </form>
     {% endif %}
 </div>

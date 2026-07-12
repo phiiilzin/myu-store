@@ -118,10 +118,15 @@ CREATE TABLE IF NOT EXISTS vendedor_push_tokens (
 -- mesma sala (chat em grupo com o cliente daquele pedido).
 -- "vendedor_respondeu" controla se algum vendedor humano já escreveu nessa
 -- sala — usado para decidir se o bot de IA ainda deve responder ou não.
+-- "avaliacao_liberada" controla se o vendedor já liberou a opção de
+-- avaliar este pedido. O cliente só vê o formulário de avaliação depois
+-- que algum vendedor clicar em "Liberar avaliação" no chat (normalmente
+-- depois de finalizar o atendimento/entrega combinada na conversa).
 CREATE TABLE IF NOT EXISTS chats (
     id                  INTEGER PRIMARY KEY AUTOINCREMENT,
     pedido_id           INTEGER NOT NULL UNIQUE,
     vendedor_respondeu  INTEGER NOT NULL DEFAULT 0,
+    avaliacao_liberada  INTEGER NOT NULL DEFAULT 0,
     criado_em           TEXT NOT NULL DEFAULT (datetime('now')),
     FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE
 );

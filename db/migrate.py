@@ -46,6 +46,15 @@ def main():
         cur.execute("ALTER TABLE chats ADD COLUMN vendedor_respondeu INTEGER NOT NULL DEFAULT 0")
         print("[migrate] Coluna 'vendedor_respondeu' adicionada à tabela chats.")
 
+    # --- Adiciona a coluna "avaliacao_liberada" em bancos criados antes
+    # do sistema de liberação de avaliação pelo vendedor existir. Pedidos
+    # antigos (que já podiam ser avaliados livremente) ficam com o valor
+    # padrão 0 — se o cliente já avaliou, o formulário simplesmente não
+    # aparece mais (a avaliação já feita continua sendo exibida normalmente). ---
+    if "avaliacao_liberada" not in colunas_chats:
+        cur.execute("ALTER TABLE chats ADD COLUMN avaliacao_liberada INTEGER NOT NULL DEFAULT 0")
+        print("[migrate] Coluna 'avaliacao_liberada' adicionada à tabela chats.")
+
     # --- Adiciona a coluna "emoji" em pets/seeds/gears, em bancos criados
     # antes dessa coluna existir. ---
     for tabela in ("pets", "seeds", "gears"):

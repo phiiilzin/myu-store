@@ -6,6 +6,9 @@
     <title>MYU Store - Melhor loja de Grow a Garden!</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/Style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
         .ofertas-grid{
             display:grid;
@@ -66,6 +69,41 @@
         }
         .oferta-card .buy-btn:hover{
             transform:translateY(-2px);
+        }
+
+        /* Cada categoria tem uma cor própria (mesmas cores usadas no Painel
+           Admin), pra ficar fácil bater o olho e saber se é Pet, Seed ou
+           Gear antes mesmo de ler o nome. */
+        .oferta-card.cat-pets{
+            border-color:rgba(255,159,67,.4);
+        }
+        .oferta-card.cat-seeds{
+            border-color:rgba(46,204,113,.4);
+        }
+        .oferta-card.cat-gears{
+            border-color:rgba(77,166,255,.4);
+        }
+        .categoria-badge{
+            display:inline-block;
+            font-size:10px;
+            font-weight:bold;
+            text-transform:uppercase;
+            letter-spacing:.5px;
+            padding:3px 8px;
+            border-radius:20px;
+            margin-top:8px;
+        }
+        .categoria-badge.cat-pets{
+            background:rgba(255,159,67,.15);
+            color:#ff9f43;
+        }
+        .categoria-badge.cat-seeds{
+            background:rgba(46,204,113,.15);
+            color:#2ecc71;
+        }
+        .categoria-badge.cat-gears{
+            background:rgba(77,166,255,.15);
+            color:#4da6ff;
         }
 
         /* HAMBURGUER */
@@ -200,13 +238,14 @@
         {% if ofertas %}
         <div class="ofertas-grid">
             {% for oferta in ofertas %}
-            <div class="oferta-card">
+            <div class="oferta-card cat-{{ oferta.categoria }}">
                 {% if oferta.emoji %}
                 <div style="font-size:52px;line-height:1;margin-bottom:5px;">{{ oferta.emoji }}</div>
                 {% elif oferta.imagem %}
                 <img src="{{ url_for('static', filename=oferta.imagem) }}" onerror="this.style.display='none'">
                 {% endif %}
                 <div class="nome">{{ oferta.nome }}</div>
+                <span class="categoria-badge cat-{{ oferta.categoria }}">{{ oferta.categoria }}</span>
                 <div class="stock-info">Stock: {{ oferta.stock }}</div>
                 <div class="preco-original">R$ {{ "%.2f"|format(oferta.preco_original) }}</div>
                 <div class="preco-promo">R$ {{ "%.2f"|format(oferta.preco_promocional) }}</div>
@@ -236,7 +275,7 @@
             ⚡
             <div>
                 <strong>ENTREGA RÁPIDA</strong>
-                <p>Automática e instantânea</p>
+                <p>Feita à mão pelo vendedor, direto no chat</p>
             </div>
         </div>
 
