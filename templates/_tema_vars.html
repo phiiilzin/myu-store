@@ -1,0 +1,40 @@
+{# templates/_tema_vars.html — injeta as variáveis de tema global (cores, fundo, fontes) #}
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@400;600;700&family=Nunito:wght@400;600;700&family=Montserrat:wght@400;600;700&family=Baloo+2:wght@400;600;700&family=Quicksand:wght@400;600;700&family=Rubik:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --site-bg-color: {{ tema.bg_color }};
+        --site-primary-color: {{ tema.primary_color }};
+        --site-secondary-color: {{ tema.secondary_color }};
+        --site-accent-color: {{ tema.accent_color }};
+        --site-text-color: {{ tema.text_color }};
+        --site-card-color: {{ tema.card_color }};
+        --site-overlay-opacity: {{ tema.overlay_opacity }};
+        --site-card-opacity: {{ tema.card_opacity }};
+        --site-font: '{{ tema.font_family }}', sans-serif;
+    }
+
+    body {
+        font-family: var(--site-font) !important;
+        color: var(--site-text-color);
+        background-color: var(--site-bg-color);
+        {% if tema.bg_image %}
+        background-image:
+            linear-gradient(rgba(0,0,0, var(--site-overlay-opacity)), rgba(0,0,0, var(--site-overlay-opacity))),
+            url('{{ tema.bg_image }}');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        {% endif %}
+    }
+
+    /* Cards genéricos (aplica se a página usar essas classes) */
+    .oferta-card, .produto-card, .item-card, .section, .card {
+        background-color: var(--site-card-color) !important;
+        opacity: var(--site-card-opacity);
+    }
+
+    /* Cores de categoria já usadas no projeto, agora vindas do tema */
+    .categoria-pets, .btn-pets { background-color: var(--site-primary-color) !important; }
+    .categoria-seeds, .btn-seeds { background-color: var(--site-secondary-color) !important; }
+    .categoria-gears, .btn-gears { background-color: var(--site-accent-color) !important; }
+</style>

@@ -12,10 +12,12 @@ Sistema de:
 """
 
 import os
+import json
 import secrets
 from functools import wraps
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from werkzeug.utils import secure_filename
 
 from db.queries import get_db, close_db
 import push
@@ -43,6 +45,48 @@ def login_obrigatorio(view_func):
             return redirect(url_for("login", erro="login_necessario"))
         return view_func(*args, **kwargs)
     return wrapper
+
+
+# ------------------------------------------------------------------
+# Tema global do site (cores, fundo, transparência, fonte)
+# Guardado em configuracoes(chave='tema_site') como JSON.
+# Qualquer vendedor logado pode alterar (mesma regra do Sobre Nós / Bot).
+# ------------------------------------------------------------------
+
+TEMA_PADRAO = {
+    "bg_image": "",
+    "bg_color": "#0f0f1a",
+    "primary_color": "#ff9f43",
+    "secondary_color": "#2ecc71",
+    "accent_color": "#4da6ff",
+    "text_color": "#ffffff",
+    "card_color": "#1a1a2e",
+    "overlay_opacity": "0.5",
+    "card_opacity": "0.9",
+    "font_family": "Fredoka",
+}
+
+FONTES_DISPONIVEIS = ["Fredoka", "Poppins", "Nunito", "Montserrat", "Baloo 2", "Quicksand", "Rubik"]
+
+THEME_UPLOAD_FOLDER = os.path.join("static", "uploads", "theme")
+
+
+def get_tema(db):
+    row = db.execute("SELECT valor FROM configuracoes WHERE chave = 'tema_site'").fetchone()
+    tema = dict(TEMA_PADRAO)
+    if row and row["valor"]:
+        try:
+            tema.update(json.loads(row["valor"]))
+        except (ValueError, TypeError):
+            pass
+    return tema
+
+
+@app.context_processor
+def injetar_tema():
+    """Deixa a variável 'tema' disponível em TODOS os templates automaticamente."""
+    db = get_db()
+    return {"tema": get_tema(db), "fontes_disponiveis": FONTES_DISPONIVEIS}
 
 
 def get_or_create_cart_session_id():
@@ -1020,6 +1064,71 @@ def update_sobre_nos():
     )
     db.commit()
     flash("Texto de 'Sobre Nós' atualizado!")
+    return redirect(url_for("painel_adm"))
+
+
+# ------------------------------------------------------------------
+# Tema global do site
+# ------------------------------------------------------------------
+
+@app.route("/update_tema", methods=["POST"])
+@login_obrigatorio
+def update_tema():
+    db = get_db()
+    tema_atual = get_tema(db)
+
+    novo_tema = {
+        "bg_color": request.form.get("bg_color", tema_atual["bg_color"]),
+        "primary_color": request.form.get("primary_color", tema_atual["primary_color"]),
+        "secondary_color": request.form.get("secondary_color", tema_atual["secondary_color"]),
+        "accent_color": request.form.get("accent_color", tema_atual["accent_color"]),
+        "text_color": request.form.get("text_color", tema_atual["text_color"]),
+        "card_color": request.form.get("card_color", tema_atual["card_color"]),
+        "overlay_opacity": request.form.get("overlay_opacity", tema_atual["overlay_opacity"]),
+        "card_opacity": request.form.get("card_opacity", tema_atual["card_opacity"]),
+        "font_family": request.form.get("font_family", tema_atual["font_family"]),
+        "bg_image": tema_atual["bg_image"],
+    }
+
+    if request.form.get("remover_bg_image") == "1":
+        novo_tema["bg_image"] = ""
+
+    arquivo = request.files.get("bg_image")
+    if arquivo and arquivo.filename:
+        extensoes_permitidas = {"png", "jpg", "jpeg", "webp", "gif"}
+        ext = arquivo.filename.rsplit(".", 1)[-1].lower() if "." in arquivo.filename else ""
+        if ext in extensoes_permitidas:
+            os.makedirs(THEME_UPLOAD_FOLDER, exist_ok=True)
+            nome_seguro = secure_filename(arquivo.filename)
+            nome_final = f"bg_{secrets.token_hex(6)}_{nome_seguro}"
+            caminho_disco = os.path.join(THEME_UPLOAD_FOLDER, nome_final)
+            arquivo.save(caminho_disco)
+            novo_tema["bg_image"] = "/" + caminho_disco.replace("\\", "/")
+        else:
+            flash("Formato de imagem não suportado (use png, jpg, jpeg, webp ou gif).")
+            return redirect(url_for("painel_adm"))
+
+    db.execute(
+        "INSERT INTO configuracoes (chave, valor) VALUES ('tema_site', ?) "
+        "ON CONFLICT(chave) DO UPDATE SET valor = excluded.valor",
+        (json.dumps(novo_tema),),
+    )
+    db.commit()
+    flash("Tema do site atualizado!")
+    return redirect(url_for("painel_adm"))
+
+
+@app.route("/resetar_tema", methods=["POST"])
+@login_obrigatorio
+def resetar_tema():
+    db = get_db()
+    db.execute(
+        "INSERT INTO configuracoes (chave, valor) VALUES ('tema_site', ?) "
+        "ON CONFLICT(chave) DO UPDATE SET valor = excluded.valor",
+        (json.dumps(TEMA_PADRAO),),
+    )
+    db.commit()
+    flash("Tema resetado para o padrão.")
     return redirect(url_for("painel_adm"))
 
 
