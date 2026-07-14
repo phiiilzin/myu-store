@@ -18,14 +18,14 @@ body{
     justify-content:space-between;
     align-items:center;
     padding:14px 16px;
-    background:rgba(20,20,20,.97);
+    background:var(--site-chat-header-bg, rgba(20,20,20,.97));
     border-bottom:1px solid rgba(157,255,0,.2);
     box-shadow:0 0 20px rgba(157,255,0,.08);
 }
 
 .chat-header h1{
     font-size:17px;
-    color:#9dff00;
+    color:var(--site-chat-accent, #9dff00);
 }
 
 .chat-header .pedido-info{
@@ -37,7 +37,7 @@ body{
 .back-btn{
     text-decoration:none;
     color:white;
-    background:#252525;
+    background:var(--site-chat-msg-cliente-bg, #252525);
     padding:7px 13px;
     border-radius:10px;
     font-size:13px;
@@ -81,13 +81,13 @@ body{
 
 .msg.cliente{
     align-self:flex-start;
-    background:#252525;
+    background:var(--site-chat-msg-cliente-bg, #252525);
     border:1px solid rgba(255,255,255,.08);
 }
 
 .msg.vendedor{
     align-self:flex-end;
-    background:linear-gradient(180deg,#9dff00,#53c400);
+    background:var(--site-chat-msg-vendedor-bg, linear-gradient(180deg,#9dff00,#53c400));
     color:#0a0a0a;
 }
 
@@ -115,7 +115,7 @@ body{
     display:flex;
     gap:8px;
     padding:12px 14px;
-    background:rgba(20,20,20,.97);
+    background:var(--site-chat-header-bg, rgba(20,20,20,.97));
     border-top:1px solid rgba(157,255,0,.15);
     width:100%;
 }
@@ -125,7 +125,7 @@ body{
     height:44px;
     border-radius:22px;
     border:1px solid #333;
-    background:#252525;
+    background:var(--site-chat-msg-cliente-bg, #252525);
     color:white;
     padding:0 16px;
     outline:none;
@@ -134,7 +134,7 @@ body{
 }
 
 .chat-input-bar input:focus{
-    border-color:#9dff00;
+    border-color:var(--site-chat-accent, #9dff00);
 }
 
 .chat-input-bar button{
@@ -142,7 +142,7 @@ body{
     height:44px;
     border:none;
     border-radius:50%;
-    background:linear-gradient(180deg,#9dff00,#53c400);
+    background:var(--site-chat-msg-vendedor-bg, linear-gradient(180deg,#9dff00,#53c400));
     color:#0a0a0a;
     font-size:16px;
     cursor:pointer;
@@ -160,5 +160,5 @@ body{
 }
 
 .itens-resumo strong{
-    color:#9dff00;
+    color:var(--site-chat-accent, #9dff00);
 }

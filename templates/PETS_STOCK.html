@@ -6,7 +6,8 @@
 
 <title>MYU Store - Pets Stock</title>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='css/PETS_STOCK.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/PETS_STOCK.css') }}?v={{ asset_version }}">
+    {% include '_tema_vars.html' %}
 </head>
 
 <body>

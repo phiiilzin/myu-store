@@ -6,13 +6,14 @@
 
 <title>Painel Admin - MYU Store</title>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='css/Painel_ADM.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/Painel_ADM.css') }}?v={{ asset_version }}">
 
 {% if push_disponivel %}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
 <script src="{{ url_for('static', filename='js/firebase-config.js') }}"></script>
 {% endif %}
+    {% include '_tema_vars.html' %}
 </head>
 
 <body>
@@ -40,11 +41,29 @@
   {% endif %}
 {% endwith %}
 
+<!-- TABELA DE SEÇÕES: clique numa linha pra abrir só aquela parte do painel -->
+<div class="secoes-nav-wrap">
+    <table class="secoes-nav" id="secoesNav">
+        <tbody>
+            <tr data-alvo="pedidos" style="--sec-accent:#9dff00;"><td>🛒</td><td>Pedidos recentes</td><td class="seta">›</td></tr>
+            <tr data-alvo="sobre" style="--sec-accent:#4dc4ff;"><td>📝</td><td>Sobre Nós</td><td class="seta">›</td></tr>
+            <tr data-alvo="tema" style="--sec-accent:#9dff00;"><td>🎨</td><td>Personalizar Site</td><td class="seta">›</td></tr>
+            <tr data-alvo="bot" style="--sec-accent:#b388ff;"><td>🤖</td><td>Bot de Atendimento</td><td class="seta">›</td></tr>
+            <tr data-alvo="seeds" style="--sec-accent:#2ecc71;"><td>🌱</td><td>Seeds</td><td class="seta">›</td></tr>
+            <tr data-alvo="gears" style="--sec-accent:#4da6ff;"><td>⚙️</td><td>Gears</td><td class="seta">›</td></tr>
+            <tr data-alvo="pets" style="--sec-accent:#ff9f43;"><td>🐾</td><td>Pets</td><td class="seta">›</td></tr>
+            <tr data-alvo="ofertas" style="--sec-accent:#ffd166;"><td>🔥</td><td>Ofertas do Dia</td><td class="seta">›</td></tr>
+        </tbody>
+    </table>
+</div>
+
 <!-- CONTAINER -->
-<div class="container">
+<div class="container" id="painelContainer">
+
+    <button type="button" id="btnVoltarSecoes" class="btn-voltar-secoes">‹ Voltar às seções</button>
 
     <!-- PEDIDOS / CHATS -->
-    <div class="section section-pedidos">
+    <div class="section section-pedidos" data-secao="pedidos">
         <h2>🛒 Pedidos recentes</h2>
 
         {% if not pedidos %}
@@ -69,7 +88,7 @@
     </div>
 
     <!-- SOBRE NÓS -->
-    <div class="section section-sobre">
+    <div class="section section-sobre" data-secao="sobre">
         <h2>📝 Editar "Sobre Nós"</h2>
         <p style="color:#aaa;font-size:13px;margin-bottom:12px;">
             Este texto aparece na página pública "Sobre Nós", acessível pelo menu do site.
@@ -82,8 +101,301 @@
         </form>
     </div>
 
+    <!-- PERSONALIZAR SITE (TEMA GLOBAL - EDITOR AVANÇADO) -->
+    <div class="section section-tema" data-secao="tema">
+        <h2>🎨 Personalizar Site</h2>
+        <p style="color:#aaa;font-size:13px;margin-bottom:12px;">
+            Escolha exatamente o que quer mudar. Cada grupo abaixo controla uma parte diferente do site
+            — o que você não mexer continua igual.
+        </p>
+
+        <style>
+            .tema-grupo { border:1px solid #333; border-radius:12px; margin-bottom:10px; overflow:hidden; }
+            .tema-grupo summary { cursor:pointer; padding:12px 14px; font-weight:700; background:#1c1c1c; list-style:none; }
+            .tema-grupo summary::-webkit-details-marker { display:none; }
+            .tema-grupo summary::before { content:"▸ "; }
+            .tema-grupo[open] summary::before { content:"▾ "; }
+            .tema-grupo-body { padding:14px; display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+            .campo-tema label { display:block; font-size:12px; color:#aaa; margin-bottom:4px; }
+            .campo-tema input[type="color"] { width:100%; height:38px; border:none; border-radius:8px; }
+            .campo-tema input[type="range"] { width:100%; }
+            .campo-tema select, .campo-tema input[type="file"] {
+                width:100%; padding:10px; border-radius:8px; border:1px solid #333; background:#252525; color:white;
+            }
+        </style>
+
+        <form method="POST" action="{{ url_for('update_tema') }}" enctype="multipart/form-data">
+
+            <details class="tema-grupo" open>
+                <summary>🌐 Geral (fundo, texto, fonte)</summary>
+                <div class="tema-grupo-body">
+                    <div class="campo-tema" style="grid-column:1 / -1;">
+                        <label>Imagem de fundo do site</label>
+                        <input type="file" name="bg_image" accept="image/*">
+                        {% if tema.bg_image %}
+                            <img src="{{ tema.bg_image }}" alt="fundo atual"
+                                style="width:100%;max-height:100px;object-fit:cover;border-radius:8px;margin-top:8px;">
+                            <label style="margin-top:6px;">
+                                <input type="checkbox" name="remover_bg_image" value="1"> Remover imagem de fundo
+                            </label>
+                        {% endif %}
+                    </div>
+                    <div class="campo-tema">
+                        <label>Fonte do site</label>
+                        <select name="font_family">
+                            {% for f in fontes_disponiveis %}
+                                <option value="{{ f }}" {% if tema.font_family == f %}selected{% endif %}>{{ f }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="campo-tema">
+                        <label>Cor de fundo geral</label>
+                        <input type="color" name="bg_color" value="{{ tema.bg_color if tema.bg_color.startswith('#') else '#0f0f1a' }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Cor do texto</label>
+                        <input type="color" name="text_color" value="{{ tema.text_color if tema.text_color.startswith('#') else '#ffffff' }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Cor de fundo dos cards/seções</label>
+                        <input type="color" name="card_color" value="{{ tema.card_color if tema.card_color.startswith('#') else '#1a1a2e' }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Transparência da camada sobre a imagem de fundo ({{ tema.overlay_opacity }})</label>
+                        <input type="range" name="overlay_opacity" min="0" max="1" step="0.05" value="{{ tema.overlay_opacity }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Transparência dos cards/seções ({{ tema.card_opacity }})</label>
+                        <input type="range" name="card_opacity" min="0" max="1" step="0.05" value="{{ tema.card_opacity }}">
+                    </div>
+                </div>
+            </details>
+
+            <details class="tema-grupo">
+                <summary>🏷️ Categorias (Pets / Seeds / Gears)</summary>
+                <div class="tema-grupo-body">
+                    <div class="campo-tema">
+                        <label>Cor Pets</label>
+                        <input type="color" name="primary_color" value="{{ tema.primary_color }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Cor Seeds</label>
+                        <input type="color" name="secondary_color" value="{{ tema.secondary_color }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Cor Gears</label>
+                        <input type="color" name="accent_color" value="{{ tema.accent_color }}">
+                    </div>
+                </div>
+            </details>
+
+            <details class="tema-grupo">
+                <summary>📌 Cabeçalho / Navbar (site público)</summary>
+                <div class="tema-grupo-body">
+                    <div class="campo-tema">
+                        <label>Fundo da barra de navegação</label>
+                        <input type="color" name="navbar_bg" value="{{ tema.navbar_bg if tema.navbar_bg.startswith('#') else '#0a0a0a' }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Botão "Carrinho" no menu</label>
+                        <input type="color" name="nav_cart_btn_bg" value="{{ tema.nav_cart_btn_bg if tema.nav_cart_btn_bg.startswith('#') else '#56ff56' }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Botão "Entrar/Login" no menu</label>
+                        <input type="color" name="nav_login_btn_bg" value="{{ tema.nav_login_btn_bg if tema.nav_login_btn_bg.startswith('#') else '#222222' }}">
+                    </div>
+                </div>
+            </details>
+
+            <details class="tema-grupo">
+                <summary>🛒 Botões principais (comprar / checkout)</summary>
+                <div class="tema-grupo-body">
+                    <div class="campo-tema">
+                        <label>Botão "Comprar Agora" (banner da home)</label>
+                        <input type="color" name="buy_btn_bg" value="{{ tema.buy_btn_bg if tema.buy_btn_bg.startswith('#') else '#9dff00' }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Botão "Finalizar Pedido" (checkout)</label>
+                        <input type="color" name="checkout_btn_bg" value="{{ tema.checkout_btn_bg if tema.checkout_btn_bg.startswith('#') else '#9dff00' }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Botão "Continuar Comprando"</label>
+                        <input type="color" name="continue_btn_bg" value="{{ tema.continue_btn_bg if tema.continue_btn_bg.startswith('#') else '#242424' }}">
+                    </div>
+                </div>
+            </details>
+
+            <details class="tema-grupo">
+                <summary>🃏 Cards da Home (por categoria)</summary>
+                <div class="tema-grupo-body">
+                    <div class="campo-tema">
+                        <label>Fundo do card Pets</label>
+                        <input type="color" name="card_pets_bg" value="{{ tema.card_pets_bg if tema.card_pets_bg.startswith('#') else '#2d1e0f' }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Fundo do card Seeds</label>
+                        <input type="color" name="card_seeds_bg" value="{{ tema.card_seeds_bg if tema.card_seeds_bg.startswith('#') else '#0f230f' }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Fundo do card Gears</label>
+                        <input type="color" name="card_gears_bg" value="{{ tema.card_gears_bg if tema.card_gears_bg.startswith('#') else '#0f1928' }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Fundo do card Trades</label>
+                        <input type="color" name="card_trades_bg" value="{{ tema.card_trades_bg if tema.card_trades_bg.startswith('#') else '#231432' }}">
+                    </div>
+                </div>
+            </details>
+
+            <details class="tema-grupo">
+                <summary>🛍️ Carrinho</summary>
+                <div class="tema-grupo-body">
+                    <div class="campo-tema">
+                        <label>Fundo do card do carrinho / resumo</label>
+                        <input type="color" name="cart_card_bg" value="{{ tema.cart_card_bg if tema.cart_card_bg.startswith('#') else '#0f0f0f' }}">
+                    </div>
+                </div>
+            </details>
+
+            <details class="tema-grupo">
+                <summary>📄 Rodapé</summary>
+                <div class="tema-grupo-body">
+                    <div class="campo-tema">
+                        <label>Cor do texto do rodapé</label>
+                        <input type="color" name="footer_text_color" value="{{ tema.footer_text_color if tema.footer_text_color.startswith('#') else '#777777' }}">
+                    </div>
+                </div>
+            </details>
+
+            <details class="tema-grupo">
+                <summary>⚙️ Painel Admin (só você vê)</summary>
+                <div class="tema-grupo-body">
+                    <div class="campo-tema">
+                        <label>Fundo do cabeçalho do painel</label>
+                        <input type="color" name="painel_header_bg" value="{{ tema.painel_header_bg if tema.painel_header_bg.startswith('#') else '#141414' }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Cor do título do painel</label>
+                        <input type="color" name="painel_title_color" value="{{ tema.painel_title_color }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Botão "Sair" (logout)</label>
+                        <input type="color" name="logout_btn_bg" value="{{ tema.logout_btn_bg }}">
+                    </div>
+                </div>
+            </details>
+
+            <details class="tema-grupo">
+                <summary>📦 Páginas de Estoque (Pets / Seeds / Gears)</summary>
+                <div class="tema-grupo-body">
+                    <div class="campo-tema">
+                        <label>Fundo da página</label>
+                        <input type="color" name="subpage_body_bg" value="{{ tema.subpage_body_bg }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Fundo do cabeçalho</label>
+                        <input type="color" name="subpage_header_bg" value="{{ tema.subpage_header_bg }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Cor de destaque (logo/título)</label>
+                        <input type="color" name="subpage_accent" value="{{ tema.subpage_accent }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Botão "Voltar"</label>
+                        <input type="color" name="subpage_backbtn_bg" value="{{ tema.subpage_backbtn_bg }}">
+                    </div>
+                </div>
+            </details>
+
+            <details class="tema-grupo">
+                <summary>⭐ Avaliações</summary>
+                <div class="tema-grupo-body">
+                    <div class="campo-tema">
+                        <label>Cor das estrelas</label>
+                        <input type="color" name="rating_stars" value="{{ tema.rating_stars }}">
+                    </div>
+                </div>
+            </details>
+
+            <details class="tema-grupo">
+                <summary>📖 Sobre Nós</summary>
+                <div class="tema-grupo-body">
+                    <div class="campo-tema">
+                        <label>Fundo do card de texto</label>
+                        <input type="color" name="sobre_content_bg" value="{{ tema.sobre_content_bg }}">
+                    </div>
+                </div>
+            </details>
+
+            <details class="tema-grupo">
+                <summary>🔄 Trocas (Trades)</summary>
+                <div class="tema-grupo-body">
+                    <div class="campo-tema">
+                        <label>Fundo do cabeçalho</label>
+                        <input type="color" name="trades_header_bg" value="{{ tema.trades_header_bg if tema.trades_header_bg.startswith('#') else '#141414' }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Cor de destaque</label>
+                        <input type="color" name="trades_accent" value="{{ tema.trades_accent }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Botão "Voltar"</label>
+                        <input type="color" name="trades_backbtn_bg" value="{{ tema.trades_backbtn_bg }}">
+                    </div>
+                </div>
+            </details>
+
+            <details class="tema-grupo">
+                <summary>🔑 Login</summary>
+                <div class="tema-grupo-body">
+                    <div class="campo-tema">
+                        <label>Fundo do card de login</label>
+                        <input type="color" name="login_card_bg" value="{{ tema.login_card_bg if tema.login_card_bg.startswith('#') else '#141414' }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Cor de destaque (título/link)</label>
+                        <input type="color" name="login_accent" value="{{ tema.login_accent }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Fundo dos campos de texto</label>
+                        <input type="color" name="login_input_bg" value="{{ tema.login_input_bg }}">
+                    </div>
+                </div>
+            </details>
+
+            <details class="tema-grupo">
+                <summary>💬 Chat</summary>
+                <div class="tema-grupo-body">
+                    <div class="campo-tema">
+                        <label>Fundo do cabeçalho do chat</label>
+                        <input type="color" name="chat_header_bg" value="{{ tema.chat_header_bg if tema.chat_header_bg.startswith('#') else '#141414' }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Cor de destaque</label>
+                        <input type="color" name="chat_accent" value="{{ tema.chat_accent }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Balão de mensagem do cliente</label>
+                        <input type="color" name="chat_msg_cliente_bg" value="{{ tema.chat_msg_cliente_bg }}">
+                    </div>
+                    <div class="campo-tema">
+                        <label>Balão de mensagem do vendedor</label>
+                        <input type="color" name="chat_msg_vendedor_bg" value="{{ tema.chat_msg_vendedor_bg if tema.chat_msg_vendedor_bg.startswith('#') else '#9dff00' }}">
+                    </div>
+                </div>
+            </details>
+
+            <button type="submit" style="margin-top:14px;">Salvar tema</button>
+        </form>
+
+        <form method="POST" action="{{ url_for('resetar_tema') }}" style="margin-top:10px;"
+            onsubmit="return confirm('Resetar TODO o tema para o padrão? Isso desfaz todas as cores personalizadas.');">
+            <button type="submit" style="background:transparent;border:1px solid #666;color:#ccc;">Resetar tudo para o padrão</button>
+        </form>
+    </div>
+
     <!-- BOT DE ATENDIMENTO -->
-    <div class="section section-bot">
+    <div class="section section-bot" data-secao="bot">
         <h2>🤖 Bot de Atendimento</h2>
         <p style="color:#aaa;font-size:13px;margin-bottom:15px;">
             O bot responde automaticamente no chat enquanto nenhum vendedor tiver respondido ainda.
@@ -139,7 +451,7 @@
 
 
     <!-- SEEDS -->
-    <div class="section section-seeds">
+    <div class="section section-seeds" data-secao="seeds">
         <h2>🌱 Editar / Adicionar Seeds</h2>
 
         <form method="POST" action="{{ url_for('update_seed') }}">
@@ -173,7 +485,7 @@
     </div>
 
     <!-- GEARS -->
-    <div class="section section-gears">
+    <div class="section section-gears" data-secao="gears">
         <h2>⚙️ Editar / Adicionar Gears</h2>
 
         <form method="POST" action="{{ url_for('update_gear') }}">
@@ -205,7 +517,7 @@
     </div>
 
     <!-- PETS -->
-    <div class="section section-pets">
+    <div class="section section-pets" data-secao="pets">
         <h2>🐾 Editar / Adicionar Pets</h2>
 
         <form method="POST" action="{{ url_for('update_pet') }}">
@@ -237,7 +549,7 @@
     </div>
 
     <!-- OFERTAS DO DIA -->
-    <div class="section section-ofertas">
+    <div class="section section-ofertas" data-secao="ofertas">
         <h2>🔥 Ofertas do Dia</h2>
         <p style="color:#aaa;font-size:13px;margin-bottom:15px;">
             Escolha um item já existente (de Pets, Seeds ou Gears) e defina um preço promocional.
@@ -310,6 +622,54 @@ if (categoriaSelect) {
         });
     });
 }
+
+// ------------------------------------------------------------------
+// NAVEGAÇÃO POR TABELA: clica numa linha, mostra só aquela seção.
+// Guarda a escolha em sessionStorage pra continuar na mesma seção
+// se a página recarregar (ex: depois de salvar um formulário).
+// ------------------------------------------------------------------
+(function () {
+    const linhas = document.querySelectorAll('#secoesNav tr[data-alvo]');
+    const secoes = document.querySelectorAll('#painelContainer .section[data-secao]');
+    const nav = document.getElementById('secoesNav');
+    const container = document.getElementById('painelContainer');
+
+    function abrirSecao(nomeAlvo) {
+        secoes.forEach(sec => {
+            sec.classList.toggle('secao-ativa', sec.dataset.secao === nomeAlvo);
+        });
+        linhas.forEach(tr => {
+            tr.classList.toggle('linha-ativa', tr.dataset.alvo === nomeAlvo);
+        });
+        if (nomeAlvo) {
+            nav.classList.add('nav-recolhida');
+            container.classList.add('mostrando-secao');
+            sessionStorage.setItem('painelSecaoAtiva', nomeAlvo);
+            const secaoEl = document.querySelector('.section[data-secao="' + nomeAlvo + '"]');
+            if (secaoEl) secaoEl.scrollIntoView({ behavior: 'instant', block: 'start' });
+        }
+    }
+
+    function fecharSecao() {
+        secoes.forEach(sec => sec.classList.remove('secao-ativa'));
+        linhas.forEach(tr => tr.classList.remove('linha-ativa'));
+        nav.classList.remove('nav-recolhida');
+        container.classList.remove('mostrando-secao');
+        sessionStorage.removeItem('painelSecaoAtiva');
+        nav.scrollIntoView({ behavior: 'instant', block: 'start' });
+    }
+
+    linhas.forEach(tr => {
+        tr.addEventListener('click', () => abrirSecao(tr.dataset.alvo));
+    });
+
+    const btnVoltar = document.getElementById('btnVoltarSecoes');
+    if (btnVoltar) btnVoltar.addEventListener('click', fecharSecao);
+
+    // Reabre a mesma seção depois de salvar um formulário (POST recarrega a página)
+    const salva = sessionStorage.getItem('painelSecaoAtiva');
+    if (salva) abrirSecao(salva);
+})();
 </script>
 
 </body>
