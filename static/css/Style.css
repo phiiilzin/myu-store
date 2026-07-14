@@ -32,7 +32,7 @@ body{
     width: 100%;
     z-index: 999;
     backdrop-filter: blur(5px);
-    background: rgba(10,10,10,.85);
+    background: var(--site-navbar-bg, rgba(10,10,10,.85));
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -60,7 +60,7 @@ body{
 .cart{
     color: #000000;
     text-decoration: none;
-    background-color: #56ff56;
+    background-color: var(--site-nav-cart-btn-bg, #56ff56);
     padding: 8px 12px;
     border-radius: 8px;
     border: 1px solid #2f9900;
@@ -74,7 +74,7 @@ body{
 .login{
     color: white;
     text-decoration: none;
-    background-color: #222;
+    background-color: var(--site-nav-login-btn-bg, #222);
     padding: 8px 12px;
     border-radius: 8px;
     border: 1px solid #444;
@@ -150,7 +150,7 @@ body{
     padding: 14px 36px;
     border: none;
     border-radius: 14px;
-    background: linear-gradient(180deg, #9dff00, #53c400);
+    background: var(--site-buy-btn-bg, linear-gradient(180deg, #9dff00, #53c400));
     color: white;
     font-size: 18px;
     font-weight: 800;
@@ -221,7 +221,7 @@ body{
     width: 180px;
     min-width: 180px;
     min-height: 280px;
-    background: rgba(45,30,15,.92);
+    background: var(--site-card-pets-bg, rgba(45,30,15,.92));
     border: 1px solid rgba(217,168,108,.45);
     border-radius: 20px;
     padding: 14px 12px 18px 12px;
@@ -238,7 +238,7 @@ body{
     width: 180px;
     min-width: 180px;
     min-height: 280px;
-    background: rgba(15,35,15,.92);
+    background: var(--site-card-seeds-bg, rgba(15,35,15,.92));
     border: 1px solid rgba(103,255,44,.35);
     border-radius: 20px;
     padding: 14px 12px 18px 12px;
@@ -255,7 +255,7 @@ body{
     width: 180px;
     min-width: 180px;
     min-height: 280px;
-    background: rgba(15,25,40,.92);
+    background: var(--site-card-gears-bg, rgba(15,25,40,.92));
     border: 1px solid rgba(61,181,255,.40);
     border-radius: 20px;
     padding: 14px 12px 18px 12px;
@@ -272,7 +272,7 @@ body{
     width: 180px;
     min-width: 180px;
     min-height: 280px;
-    background: rgba(35,20,50,.92);
+    background: var(--site-card-trades-bg, rgba(35,20,50,.92));
     border: 1px solid rgba(186,85,255,.40);
     border-radius: 20px;
     padding: 14px 12px 18px 12px;

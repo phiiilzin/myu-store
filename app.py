@@ -12,10 +12,13 @@ Sistema de:
 """
 
 import os
+import json
 import secrets
+from datetime import datetime
 from functools import wraps
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from werkzeug.utils import secure_filename
 
 from db.queries import get_db, close_db
 import push
@@ -43,6 +46,124 @@ def login_obrigatorio(view_func):
             return redirect(url_for("login", erro="login_necessario"))
         return view_func(*args, **kwargs)
     return wrapper
+
+
+# ------------------------------------------------------------------
+# Tema global do site (cores, fundo, transparência, fonte)
+# Guardado em configuracoes(chave='tema_site') como JSON.
+# Qualquer vendedor logado pode alterar (mesma regra do Sobre Nós / Bot).
+# ------------------------------------------------------------------
+
+TEMA_PADRAO = {
+    # Geral
+    "bg_image": "",
+    "bg_color": "#0f0f1a",
+    "primary_color": "#ff9f43",
+    "secondary_color": "#2ecc71",
+    "accent_color": "#4da6ff",
+    "text_color": "#ffffff",
+    "card_color": "#1a1a2e",
+    "overlay_opacity": "0.5",
+    "card_opacity": "0.9",
+    "font_family": "Fredoka",
+
+    # Cabeçalho / Navbar (site público)
+    "navbar_bg": "rgba(10,10,10,.85)",
+    "nav_cart_btn_bg": "#56ff56",
+    "nav_login_btn_bg": "#222222",
+
+    # Botões principais
+    "buy_btn_bg": "linear-gradient(180deg, #9dff00, #53c400)",
+    "checkout_btn_bg": "linear-gradient(180deg,#9dff00,#53c400)",
+    "continue_btn_bg": "#242424",
+
+    # Cards da Home (categorias)
+    "card_pets_bg": "rgba(45,30,15,.92)",
+    "card_seeds_bg": "rgba(15,35,15,.92)",
+    "card_gears_bg": "rgba(15,25,40,.92)",
+    "card_trades_bg": "rgba(35,20,50,.92)",
+
+    # Carrinho
+    "cart_card_bg": "rgba(15,15,15,.92)",
+
+    # Rodapé
+    "footer_text_color": "#777777",
+
+    # Painel Admin (vendedor)
+    "painel_header_bg": "rgba(20,20,20,.95)",
+    "painel_title_color": "#9dff00",
+    "logout_btn_bg": "#ff2b2b",
+
+    # Páginas de Estoque (Pets/Seeds/Gears) + Avaliações + Sobre Nós
+    "subpage_body_bg": "#0f1117",
+    "subpage_header_bg": "#171a23",
+    "subpage_accent": "#9d7dff",
+    "subpage_backbtn_bg": "#7c3aed",
+    "rating_stars": "#ffd166",
+    "sobre_content_bg": "#1b1f2a",
+
+    # Trocas (Trades)
+    "trades_header_bg": "rgba(20,20,20,.95)",
+    "trades_accent": "#ba55ff",
+    "trades_backbtn_bg": "#7b1fff",
+
+    # Login
+    "login_card_bg": "rgba(20,20,20,.95)",
+    "login_accent": "#9dff00",
+    "login_input_bg": "#252525",
+
+    # Chat
+    "chat_header_bg": "rgba(20,20,20,.97)",
+    "chat_accent": "#9dff00",
+    "chat_msg_cliente_bg": "#252525",
+    "chat_msg_vendedor_bg": "linear-gradient(180deg,#9dff00,#53c400)",
+}
+
+# Campos que o formulário de tema pode salvar (usados em update_tema)
+CAMPOS_TEMA = [
+    "bg_color", "primary_color", "secondary_color", "accent_color", "text_color",
+    "card_color", "overlay_opacity", "card_opacity", "font_family",
+    "navbar_bg", "nav_cart_btn_bg", "nav_login_btn_bg",
+    "buy_btn_bg", "checkout_btn_bg", "continue_btn_bg",
+    "card_pets_bg", "card_seeds_bg", "card_gears_bg", "card_trades_bg",
+    "cart_card_bg", "footer_text_color",
+    "painel_header_bg", "painel_title_color", "logout_btn_bg",
+    "subpage_body_bg", "subpage_header_bg", "subpage_accent", "subpage_backbtn_bg",
+    "rating_stars", "sobre_content_bg",
+    "trades_header_bg", "trades_accent", "trades_backbtn_bg",
+    "login_card_bg", "login_accent", "login_input_bg",
+    "chat_header_bg", "chat_accent", "chat_msg_cliente_bg", "chat_msg_vendedor_bg",
+]
+
+FONTES_DISPONIVEIS = ["Fredoka", "Poppins", "Nunito", "Montserrat", "Baloo 2", "Quicksand", "Rubik"]
+
+THEME_UPLOAD_FOLDER = os.path.join("static", "uploads", "theme")
+
+# Muda a cada reinício/deploy do servidor — usado para "quebrar" o cache do
+# navegador nos arquivos .css, garantindo que mudanças de CSS apareçam na hora.
+ASSET_VERSION = str(int(datetime.utcnow().timestamp()))
+
+
+def get_tema(db):
+    row = db.execute("SELECT valor FROM configuracoes WHERE chave = 'tema_site'").fetchone()
+    tema = dict(TEMA_PADRAO)
+    if row and row["valor"]:
+        try:
+            tema.update(json.loads(row["valor"]))
+        except (ValueError, TypeError):
+            pass
+    return tema
+
+
+@app.context_processor
+def injetar_tema():
+    """Deixa a variável 'tema' disponível em TODOS os templates automaticamente."""
+    db = get_db()
+    return {
+        "tema": get_tema(db),
+        "fontes_disponiveis": FONTES_DISPONIVEIS,
+        "asset_version": ASSET_VERSION,
+    }
 
 
 def get_or_create_cart_session_id():
@@ -1020,6 +1141,63 @@ def update_sobre_nos():
     )
     db.commit()
     flash("Texto de 'Sobre Nós' atualizado!")
+    return redirect(url_for("painel_adm"))
+
+
+# ------------------------------------------------------------------
+# Tema global do site
+# ------------------------------------------------------------------
+
+@app.route("/update_tema", methods=["POST"])
+@login_obrigatorio
+def update_tema():
+    db = get_db()
+    tema_atual = get_tema(db)
+
+    novo_tema = dict(tema_atual)
+    for campo in CAMPOS_TEMA:
+        if campo in request.form:
+            novo_tema[campo] = request.form.get(campo, tema_atual.get(campo, ""))
+
+    if request.form.get("remover_bg_image") == "1":
+        novo_tema["bg_image"] = ""
+
+    arquivo = request.files.get("bg_image")
+    if arquivo and arquivo.filename:
+        extensoes_permitidas = {"png", "jpg", "jpeg", "webp", "gif"}
+        ext = arquivo.filename.rsplit(".", 1)[-1].lower() if "." in arquivo.filename else ""
+        if ext in extensoes_permitidas:
+            os.makedirs(THEME_UPLOAD_FOLDER, exist_ok=True)
+            nome_seguro = secure_filename(arquivo.filename)
+            nome_final = f"bg_{secrets.token_hex(6)}_{nome_seguro}"
+            caminho_disco = os.path.join(THEME_UPLOAD_FOLDER, nome_final)
+            arquivo.save(caminho_disco)
+            novo_tema["bg_image"] = "/" + caminho_disco.replace("\\", "/")
+        else:
+            flash("Formato de imagem não suportado (use png, jpg, jpeg, webp ou gif).")
+            return redirect(url_for("painel_adm"))
+
+    db.execute(
+        "INSERT INTO configuracoes (chave, valor) VALUES ('tema_site', ?) "
+        "ON CONFLICT(chave) DO UPDATE SET valor = excluded.valor",
+        (json.dumps(novo_tema),),
+    )
+    db.commit()
+    flash("Tema do site atualizado!")
+    return redirect(url_for("painel_adm"))
+
+
+@app.route("/resetar_tema", methods=["POST"])
+@login_obrigatorio
+def resetar_tema():
+    db = get_db()
+    db.execute(
+        "INSERT INTO configuracoes (chave, valor) VALUES ('tema_site', ?) "
+        "ON CONFLICT(chave) DO UPDATE SET valor = excluded.valor",
+        (json.dumps(TEMA_PADRAO),),
+    )
+    db.commit()
+    flash("Tema resetado para o padrão.")
     return redirect(url_for("painel_adm"))
 
 

@@ -1,0 +1,83 @@
+{# templates/_tema_vars.html — injeta TODAS as variáveis de tema global usadas pelo CSS real do site #}
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@400;600;700&family=Nunito:wght@400;600;700&family=Montserrat:wght@400;600;700&family=Baloo+2:wght@400;600;700&family=Quicksand:wght@400;600;700&family=Rubik:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        /* Geral */
+        --site-bg-color: {{ tema.bg_color }};
+        --site-text-color: {{ tema.text_color }};
+        --site-card-color: {{ tema.card_color }};
+        --site-overlay-opacity: {{ tema.overlay_opacity }};
+        --site-card-opacity: {{ tema.card_opacity }};
+        --site-font: '{{ tema.font_family }}', sans-serif;
+
+        /* Categorias (usadas em vários lugares: cards, stock, badges) */
+        --site-primary-color: {{ tema.primary_color }};
+        --site-secondary-color: {{ tema.secondary_color }};
+        --site-accent-color: {{ tema.accent_color }};
+
+        /* Cabeçalho / Navbar (site público) */
+        --site-navbar-bg: {{ tema.navbar_bg }};
+        --site-nav-cart-btn-bg: {{ tema.nav_cart_btn_bg }};
+        --site-nav-login-btn-bg: {{ tema.nav_login_btn_bg }};
+
+        /* Botões principais */
+        --site-buy-btn-bg: {{ tema.buy_btn_bg }};
+        --site-checkout-btn-bg: {{ tema.checkout_btn_bg }};
+        --site-continue-btn-bg: {{ tema.continue_btn_bg }};
+
+        /* Cards da Home (categorias) */
+        --site-card-pets-bg: {{ tema.card_pets_bg }};
+        --site-card-seeds-bg: {{ tema.card_seeds_bg }};
+        --site-card-gears-bg: {{ tema.card_gears_bg }};
+        --site-card-trades-bg: {{ tema.card_trades_bg }};
+
+        /* Carrinho */
+        --site-cart-card-bg: {{ tema.cart_card_bg }};
+
+        /* Rodapé */
+        --site-footer-text: {{ tema.footer_text_color }};
+
+        /* Painel Admin (vendedor) */
+        --site-painel-header-bg: {{ tema.painel_header_bg }};
+        --site-painel-title-color: {{ tema.painel_title_color }};
+        --site-logout-btn-bg: {{ tema.logout_btn_bg }};
+
+        /* Páginas de Estoque + Avaliações + Sobre Nós */
+        --site-subpage-body-bg: {{ tema.subpage_body_bg }};
+        --site-subpage-header-bg: {{ tema.subpage_header_bg }};
+        --site-subpage-accent: {{ tema.subpage_accent }};
+        --site-subpage-backbtn-bg: {{ tema.subpage_backbtn_bg }};
+        --site-rating-stars: {{ tema.rating_stars }};
+        --site-sobre-content-bg: {{ tema.sobre_content_bg }};
+
+        /* Trocas (Trades) */
+        --site-trades-header-bg: {{ tema.trades_header_bg }};
+        --site-trades-accent: {{ tema.trades_accent }};
+        --site-trades-backbtn-bg: {{ tema.trades_backbtn_bg }};
+
+        /* Login */
+        --site-login-card-bg: {{ tema.login_card_bg }};
+        --site-login-accent: {{ tema.login_accent }};
+        --site-login-input-bg: {{ tema.login_input_bg }};
+
+        /* Chat */
+        --site-chat-header-bg: {{ tema.chat_header_bg }};
+        --site-chat-accent: {{ tema.chat_accent }};
+        --site-chat-msg-cliente-bg: {{ tema.chat_msg_cliente_bg }};
+        --site-chat-msg-vendedor-bg: {{ tema.chat_msg_vendedor_bg }};
+    }
+
+    body {
+        font-family: var(--site-font) !important;
+        color: var(--site-text-color);
+        background-color: var(--site-bg-color);
+        {% if tema.bg_image %}
+        background-image:
+            linear-gradient(rgba(0,0,0, var(--site-overlay-opacity)), rgba(0,0,0, var(--site-overlay-opacity))),
+            url('{{ tema.bg_image }}');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        {% endif %}
+    }
+</style>

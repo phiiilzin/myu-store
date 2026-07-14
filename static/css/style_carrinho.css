@@ -67,7 +67,7 @@ body{
 /* CARD DOS ITENS */
 
 .cart-card{
-    background:rgba(15,15,15,.92);
+    background:var(--site-cart-card-bg, rgba(15,15,15,.92));
     border:1px solid rgba(157,255,0,.15);
     border-radius:20px;
     padding:18px;
@@ -161,7 +161,7 @@ body{
 /* RESUMO */
 
 .summary-card{
-    background:rgba(15,15,15,.92);
+    background:var(--site-cart-card-bg, rgba(15,15,15,.92));
     border:1px solid rgba(157,255,0,.15);
     border-radius:20px;
     padding:18px;
@@ -199,7 +199,7 @@ body{
     margin-top:18px;
     border:none;
     border-radius:14px;
-    background:linear-gradient(180deg,#9dff00,#53c400);
+    background:var(--site-checkout-btn-bg, linear-gradient(180deg,#9dff00,#53c400));
     color:white;
     font-size:16px;
     font-weight:800;
@@ -221,7 +221,7 @@ body{
     margin-top:10px;
     border:none;
     border-radius:14px;
-    background:#242424;
+    background:var(--site-continue-btn-bg, #242424);
     color:white;
     font-size:15px;
     font-weight:700;

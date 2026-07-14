@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Criar Vendedor</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/Painel_ADM.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/Painel_ADM.css') }}?v={{ asset_version }}">
+    {% include '_tema_vars.html' %}
 </head>
 
 <body style="display:flex;align-items:center;justify-content:center;min-height:100vh;">
