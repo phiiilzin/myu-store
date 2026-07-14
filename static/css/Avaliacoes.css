@@ -6,7 +6,7 @@
 }
 
 body{
-    background:#0f1117;
+    background:var(--site-subpage-body-bg, #0f1117);
     color:white;
     min-height:100vh;
 }
@@ -17,20 +17,20 @@ body{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    background:#171a23;
+    background:var(--site-subpage-header-bg, #171a23);
     border-bottom:1px solid rgba(255,255,255,.1);
 }
 
 .logo{
     font-size:20px;
     font-weight:bold;
-    color:#9d7dff;
+    color:var(--site-subpage-accent, #9d7dff);
 }
 
 .back-btn{
     text-decoration:none;
     color:white;
-    background:#7c3aed;
+    background:var(--site-subpage-backbtn-bg, #7c3aed);
     padding:9px 14px;
     border-radius:10px;
     transition:.3s;
@@ -44,7 +44,7 @@ body{
 
 .title h1{
     font-size:26px;
-    color:#9d7dff;
+    color:var(--site-subpage-accent, #9d7dff);
 }
 
 .resumo{
@@ -56,12 +56,12 @@ body{
 .resumo .nota-grande{
     font-size:40px;
     font-weight:bold;
-    color:#ffd166;
+    color:var(--site-rating-stars, #ffd166);
 }
 
 .resumo .estrelas{
     font-size:22px;
-    color:#ffd166;
+    color:var(--site-rating-stars, #ffd166);
     margin-top:4px;
 }
 
@@ -88,7 +88,7 @@ body{
 }
 
 .avaliacao-card .estrelas{
-    color:#ffd166;
+    color:var(--site-rating-stars, #ffd166);
     font-size:16px;
     margin-bottom:6px;
 }

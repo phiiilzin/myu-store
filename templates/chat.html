@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chat - Pedido #{{ pedido['id'] }} - MYU Store</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}?v={{ asset_version }}">
 <style>
 .avaliacao-box{
     max-width:800px;
@@ -97,6 +97,7 @@
     margin:0;
 }
 </style>
+    {% include '_tema_vars.html' %}
 </head>
 <body>
 

@@ -6,7 +6,8 @@
 
 <title>Login - MYU Store</title>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style_login.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style_login.css') }}?v={{ asset_version }}">
+    {% include '_tema_vars.html' %}
 </head>
 
 <body>

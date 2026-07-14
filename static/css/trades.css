@@ -17,7 +17,7 @@ body{
     justify-content:space-between;
     align-items:center;
     padding:14px 16px;
-    background:rgba(20,20,20,.95);
+    background:var(--site-trades-header-bg, rgba(20,20,20,.95));
     border-bottom:1px solid rgba(186,85,255,.25);
     box-shadow:0 0 20px rgba(186,85,255,.1);
 }
@@ -25,14 +25,14 @@ body{
 .header .logo{
     font-size:20px;
     font-weight:900;
-    color:#ba55ff;
+    color:var(--site-trades-accent, #ba55ff);
     text-shadow:0 0 12px rgba(186,85,255,.4);
 }
 
 .back-btn{
     text-decoration:none;
     color:white;
-    background:#7b1fff;
+    background:var(--site-trades-backbtn-bg, #7b1fff);
     padding:9px 14px;
     border-radius:10px;
     transition:.3s;
@@ -50,7 +50,7 @@ body{
 
 .title h1{
     font-size:26px;
-    color:#ba55ff;
+    color:var(--site-trades-accent, #ba55ff);
     text-shadow:0 0 15px rgba(186,85,255,.4);
 }
 
@@ -78,7 +78,7 @@ body{
 }
 
 .identify-card{
-    background:rgba(20,20,20,.95);
+    background:var(--site-trades-header-bg, rgba(20,20,20,.95));
     border:1px solid rgba(186,85,255,.2);
     border-radius:16px;
     padding:18px;
@@ -112,7 +112,7 @@ body{
 }
 
 .identify-card input:focus{
-    border-color:#ba55ff;
+    border-color:var(--site-trades-accent, #ba55ff);
     box-shadow:0 0 12px rgba(186,85,255,.25);
 }
 
@@ -134,7 +134,7 @@ body{
 }
 
 .form-section{
-    background:rgba(20,20,20,.95);
+    background:var(--site-trades-header-bg, rgba(20,20,20,.95));
     border:1px solid rgba(186,85,255,.2);
     border-radius:16px;
     padding:18px;
@@ -144,7 +144,7 @@ body{
 
 .form-section h2{
     margin-bottom:16px;
-    color:#ba55ff;
+    color:var(--site-trades-accent, #ba55ff);
     font-size:18px;
 }
 
@@ -172,7 +172,7 @@ body{
 }
 
 .form-section input:focus{
-    border-color:#ba55ff;
+    border-color:var(--site-trades-accent, #ba55ff);
     box-shadow:0 0 12px rgba(186,85,255,.25);
 }
 
@@ -200,7 +200,7 @@ body{
 .add-row{
     background:transparent;
     border:1px dashed rgba(186,85,255,.4);
-    color:#ba55ff;
+    color:var(--site-trades-accent, #ba55ff);
     padding:10px 14px;
     border-radius:10px;
     cursor:pointer;
@@ -245,12 +245,12 @@ body{
 }
 
 .tab-link.active{
-    background:#7b1fff;
+    background:var(--site-trades-backbtn-bg, #7b1fff);
     color:white;
 }
 
 .trade-card{
-    background:rgba(20,20,20,.95);
+    background:var(--site-trades-header-bg, rgba(20,20,20,.95));
     border:1px solid rgba(186,85,255,.2);
     border-radius:16px;
     padding:16px;
@@ -300,7 +300,7 @@ body{
 
 .trade-arrow{
     font-size:20px;
-    color:#ba55ff;
+    color:var(--site-trades-accent, #ba55ff);
     text-align:center;
     transform:rotate(90deg);
 }
