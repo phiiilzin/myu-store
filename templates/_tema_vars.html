@@ -1,14 +1,26 @@
+<<<<<<< HEAD
 {# templates/_tema_vars.html — injeta TODAS as variáveis de tema global usadas pelo CSS real do site #}
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@400;600;700&family=Nunito:wght@400;600;700&family=Montserrat:wght@400;600;700&family=Baloo+2:wght@400;600;700&family=Quicksand:wght@400;600;700&family=Rubik:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
     :root {
         /* Geral */
         --site-bg-color: {{ tema.bg_color }};
+=======
+{# templates/_tema_vars.html — injeta as variáveis de tema global (cores, fundo, fontes) #}
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@400;600;700&family=Nunito:wght@400;600;700&family=Montserrat:wght@400;600;700&family=Baloo+2:wght@400;600;700&family=Quicksand:wght@400;600;700&family=Rubik:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --site-bg-color: {{ tema.bg_color }};
+        --site-primary-color: {{ tema.primary_color }};
+        --site-secondary-color: {{ tema.secondary_color }};
+        --site-accent-color: {{ tema.accent_color }};
+>>>>>>> e3fe18147cef7e8b5eb194ed1ff38c0e6e9bcb93
         --site-text-color: {{ tema.text_color }};
         --site-card-color: {{ tema.card_color }};
         --site-overlay-opacity: {{ tema.overlay_opacity }};
         --site-card-opacity: {{ tema.card_opacity }};
         --site-font: '{{ tema.font_family }}', sans-serif;
+<<<<<<< HEAD
 
         /* Categorias (usadas em vários lugares: cards, stock, badges) */
         --site-primary-color: {{ tema.primary_color }};
@@ -65,6 +77,8 @@
         --site-chat-accent: {{ tema.chat_accent }};
         --site-chat-msg-cliente-bg: {{ tema.chat_msg_cliente_bg }};
         --site-chat-msg-vendedor-bg: {{ tema.chat_msg_vendedor_bg }};
+=======
+>>>>>>> e3fe18147cef7e8b5eb194ed1ff38c0e6e9bcb93
     }
 
     body {
@@ -80,4 +94,18 @@
         background-attachment: fixed;
         {% endif %}
     }
+<<<<<<< HEAD
+=======
+
+    /* Cards genéricos (aplica se a página usar essas classes) */
+    .oferta-card, .produto-card, .item-card, .section, .card {
+        background-color: var(--site-card-color) !important;
+        opacity: var(--site-card-opacity);
+    }
+
+    /* Cores de categoria já usadas no projeto, agora vindas do tema */
+    .categoria-pets, .btn-pets { background-color: var(--site-primary-color) !important; }
+    .categoria-seeds, .btn-seeds { background-color: var(--site-secondary-color) !important; }
+    .categoria-gears, .btn-gears { background-color: var(--site-accent-color) !important; }
+>>>>>>> e3fe18147cef7e8b5eb194ed1ff38c0e6e9bcb93
 </style>

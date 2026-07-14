@@ -55,7 +55,10 @@ def login_obrigatorio(view_func):
 # ------------------------------------------------------------------
 
 TEMA_PADRAO = {
+<<<<<<< HEAD
     # Geral
+=======
+>>>>>>> e3fe18147cef7e8b5eb194ed1ff38c0e6e9bcb93
     "bg_image": "",
     "bg_color": "#0f0f1a",
     "primary_color": "#ff9f43",
@@ -66,6 +69,7 @@ TEMA_PADRAO = {
     "overlay_opacity": "0.5",
     "card_opacity": "0.9",
     "font_family": "Fredoka",
+<<<<<<< HEAD
 
     # Cabeçalho / Navbar (site público)
     "navbar_bg": "rgba(10,10,10,.85)",
@@ -135,14 +139,21 @@ CAMPOS_TEMA = [
     "chat_header_bg", "chat_accent", "chat_msg_cliente_bg", "chat_msg_vendedor_bg",
 ]
 
+=======
+}
+
+>>>>>>> e3fe18147cef7e8b5eb194ed1ff38c0e6e9bcb93
 FONTES_DISPONIVEIS = ["Fredoka", "Poppins", "Nunito", "Montserrat", "Baloo 2", "Quicksand", "Rubik"]
 
 THEME_UPLOAD_FOLDER = os.path.join("static", "uploads", "theme")
 
+<<<<<<< HEAD
 # Muda a cada reinício/deploy do servidor — usado para "quebrar" o cache do
 # navegador nos arquivos .css, garantindo que mudanças de CSS apareçam na hora.
 ASSET_VERSION = str(int(datetime.utcnow().timestamp()))
 
+=======
+>>>>>>> e3fe18147cef7e8b5eb194ed1ff38c0e6e9bcb93
 
 def get_tema(db):
     row = db.execute("SELECT valor FROM configuracoes WHERE chave = 'tema_site'").fetchone()
@@ -159,11 +170,15 @@ def get_tema(db):
 def injetar_tema():
     """Deixa a variável 'tema' disponível em TODOS os templates automaticamente."""
     db = get_db()
+<<<<<<< HEAD
     return {
         "tema": get_tema(db),
         "fontes_disponiveis": FONTES_DISPONIVEIS,
         "asset_version": ASSET_VERSION,
     }
+=======
+    return {"tema": get_tema(db), "fontes_disponiveis": FONTES_DISPONIVEIS}
+>>>>>>> e3fe18147cef7e8b5eb194ed1ff38c0e6e9bcb93
 
 
 def get_or_create_cart_session_id():
@@ -1154,10 +1169,25 @@ def update_tema():
     db = get_db()
     tema_atual = get_tema(db)
 
+<<<<<<< HEAD
     novo_tema = dict(tema_atual)
     for campo in CAMPOS_TEMA:
         if campo in request.form:
             novo_tema[campo] = request.form.get(campo, tema_atual.get(campo, ""))
+=======
+    novo_tema = {
+        "bg_color": request.form.get("bg_color", tema_atual["bg_color"]),
+        "primary_color": request.form.get("primary_color", tema_atual["primary_color"]),
+        "secondary_color": request.form.get("secondary_color", tema_atual["secondary_color"]),
+        "accent_color": request.form.get("accent_color", tema_atual["accent_color"]),
+        "text_color": request.form.get("text_color", tema_atual["text_color"]),
+        "card_color": request.form.get("card_color", tema_atual["card_color"]),
+        "overlay_opacity": request.form.get("overlay_opacity", tema_atual["overlay_opacity"]),
+        "card_opacity": request.form.get("card_opacity", tema_atual["card_opacity"]),
+        "font_family": request.form.get("font_family", tema_atual["font_family"]),
+        "bg_image": tema_atual["bg_image"],
+    }
+>>>>>>> e3fe18147cef7e8b5eb194ed1ff38c0e6e9bcb93
 
     if request.form.get("remover_bg_image") == "1":
         novo_tema["bg_image"] = ""
