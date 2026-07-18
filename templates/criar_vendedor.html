@@ -8,8 +8,9 @@
     {% include '_tema_vars.html' %}
 </head>
 
-<body style="display:flex;align-items:center;justify-content:center;min-height:100vh;">
+<body style="display:flex;flex-direction:column;min-height:100vh;">
 
+<div style="flex:1;display:flex;align-items:center;justify-content:center;">
 <div class="section" style="max-width:420px;width:90%;">
 
     <h1 style="margin-bottom:20px;color:#9dff00;">➕ Criar Vendedor</h1>
@@ -34,6 +35,12 @@
     <a href="{{ url_for('painel_adm') }}" style="color:#9dff00;text-decoration:none;">← Voltar ao painel</a>
 
 </div>
+</div>
+
+<!-- RODAPÉ -->
+<footer class="footer">
+    <p>© 2026 MYU Store - Todos os direitos reservados.</p>
+</footer>
 
 </body>
 </html>

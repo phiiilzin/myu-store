@@ -82,16 +82,37 @@ body{
 }
 
 .gear-card{
-    background:#1b1f2a;
+    background:linear-gradient(160deg, #232735 0%, #171a23 100%);
     border-radius:16px;
     padding:18px 14px;
     text-align:center;
     transition:.3s;
     border:1px solid rgba(255,255,255,.08);
+    border-top:3px solid #9d7dff;
+    position:relative;
+    overflow:hidden;
+}
+
+.gear-card::before{
+    content:"";
+    position:absolute;
+    top:-50px;
+    left:50%;
+    transform:translateX(-50%);
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(157,125,255,.25) 0%, transparent 70%);
+    pointer-events:none;
+}
+
+.gear-card > *{
+    position:relative;
 }
 
 .gear-card:hover{
     transform:translateY(-5px);
+    box-shadow:0 10px 24px rgba(0,0,0,.4);
 }
 
 .gear-card img{
@@ -140,7 +161,7 @@ body{
 .footer{
     text-align:center;
     padding:30px;
-    color:#777;
+    color:var(--site-footer-text, #777);
     font-size:13px;
 }
 

@@ -41,13 +41,12 @@
   {% endif %}
 {% endwith %}
 
-<!-- PEDIDOS: fica sempre visível, fora da área de edição, pra não passar despercebido -->
-<div class="pedidos-fixo-wrap">
+<!-- CONTAINER -->
+<div class="container">
+
+    <!-- PEDIDOS / CHATS -->
     <div class="section section-pedidos">
-        <h2>
-            🛒 Pedidos recentes
-            {% if pedidos %}<span class="pedidos-badge">{{ pedidos|length }}</span>{% endif %}
-        </h2>
+        <h2>🛒 Pedidos recentes</h2>
 
         {% if not pedidos %}
         <p style="color:#888;">Nenhum pedido finalizado ainda.</p>
@@ -69,33 +68,9 @@
         </table>
         {% endif %}
     </div>
-</div>
-
-<!-- ÁREA DE EDIÇÃO: fica embaixo dos pedidos, separada -->
-<h3 class="edicao-titulo">✏️ Área de edição do site</h3>
-
-<!-- TABELA DE SEÇÕES: clique numa linha pra abrir só aquela parte do painel -->
-<div class="secoes-nav-wrap">
-    <table class="secoes-nav" id="secoesNav">
-        <tbody>
-            <tr data-alvo="sobre" style="--sec-accent:#4dc4ff;"><td>📝</td><td>Sobre Nós</td><td class="seta">›</td></tr>
-            <tr data-alvo="tema" style="--sec-accent:#9dff00;"><td>🎨</td><td>Personalizar Site</td><td class="seta">›</td></tr>
-            <tr data-alvo="bot" style="--sec-accent:#b388ff;"><td>🤖</td><td>Bot de Atendimento</td><td class="seta">›</td></tr>
-            <tr data-alvo="seeds" style="--sec-accent:#2ecc71;"><td>🌱</td><td>Seeds</td><td class="seta">›</td></tr>
-            <tr data-alvo="gears" style="--sec-accent:#4da6ff;"><td>⚙️</td><td>Gears</td><td class="seta">›</td></tr>
-            <tr data-alvo="pets" style="--sec-accent:#ff9f43;"><td>🐾</td><td>Pets</td><td class="seta">›</td></tr>
-            <tr data-alvo="ofertas" style="--sec-accent:#ffd166;"><td>🔥</td><td>Ofertas do Dia</td><td class="seta">›</td></tr>
-        </tbody>
-    </table>
-</div>
-
-<!-- CONTAINER -->
-<div class="container" id="painelContainer">
-
-    <button type="button" id="btnVoltarSecoes" class="btn-voltar-secoes">‹ Voltar às seções</button>
 
     <!-- SOBRE NÓS -->
-    <div class="section section-sobre" data-secao="sobre">
+    <div class="section section-sobre">
         <h2>📝 Editar "Sobre Nós"</h2>
         <p style="color:#aaa;font-size:13px;margin-bottom:12px;">
             Este texto aparece na página pública "Sobre Nós", acessível pelo menu do site.
@@ -109,7 +84,7 @@
     </div>
 
     <!-- PERSONALIZAR SITE (TEMA GLOBAL - EDITOR AVANÇADO) -->
-    <div class="section section-tema" data-secao="tema">
+    <div class="section section-tema">
         <h2>🎨 Personalizar Site</h2>
         <p style="color:#aaa;font-size:13px;margin-bottom:12px;">
             Escolha exatamente o que quer mudar. Cada grupo abaixo controla uma parte diferente do site
@@ -132,6 +107,20 @@
         </style>
 
         <form method="POST" action="{{ url_for('update_tema') }}" enctype="multipart/form-data">
+
+            {% macro campo_imagem(nome, rotulo) %}
+            <div class="campo-tema" style="grid-column:1 / -1;">
+                <label>{{ rotulo }}</label>
+                <input type="file" name="{{ nome }}" accept="image/*">
+                {% if tema[nome] %}
+                    <img src="{{ tema[nome] }}" alt="imagem atual"
+                        style="width:100%;max-height:90px;object-fit:cover;border-radius:8px;margin-top:6px;">
+                    <label style="margin-top:4px;">
+                        <input type="checkbox" name="remover_{{ nome }}" value="1"> Remover esta imagem
+                    </label>
+                {% endif %}
+            </div>
+            {% endmacro %}
 
             <details class="tema-grupo" open>
                 <summary>🌐 Geral (fundo, texto, fonte)</summary>
@@ -211,6 +200,7 @@
                         <label>Botão "Entrar/Login" no menu</label>
                         <input type="color" name="nav_login_btn_bg" value="{{ tema.nav_login_btn_bg if tema.nav_login_btn_bg.startswith('#') else '#222222' }}">
                     </div>
+                    {{ campo_imagem('navbar_image', 'Imagem de fundo da navbar (opcional, sobrepõe a cor)') }}
                 </div>
             </details>
 
@@ -251,6 +241,10 @@
                         <label>Fundo do card Trades</label>
                         <input type="color" name="card_trades_bg" value="{{ tema.card_trades_bg if tema.card_trades_bg.startswith('#') else '#231432' }}">
                     </div>
+                    {{ campo_imagem('card_pets_image', 'Imagem de fundo — card Pets') }}
+                    {{ campo_imagem('card_seeds_image', 'Imagem de fundo — card Seeds') }}
+                    {{ campo_imagem('card_gears_image', 'Imagem de fundo — card Gears') }}
+                    {{ campo_imagem('card_trades_image', 'Imagem de fundo — card Trades') }}
                 </div>
             </details>
 
@@ -311,6 +305,7 @@
                         <label>Botão "Voltar"</label>
                         <input type="color" name="subpage_backbtn_bg" value="{{ tema.subpage_backbtn_bg }}">
                     </div>
+                    {{ campo_imagem('subpage_header_image', 'Imagem de fundo do cabeçalho (aparece em Estoque, Avaliações, Sobre Nós, Trocas e Painel Admin)') }}
                 </div>
             </details>
 
@@ -402,7 +397,7 @@
     </div>
 
     <!-- BOT DE ATENDIMENTO -->
-    <div class="section section-bot" data-secao="bot">
+    <div class="section section-bot">
         <h2>🤖 Bot de Atendimento</h2>
         <p style="color:#aaa;font-size:13px;margin-bottom:15px;">
             O bot responde automaticamente no chat enquanto nenhum vendedor tiver respondido ainda.
@@ -458,7 +453,7 @@
 
 
     <!-- SEEDS -->
-    <div class="section section-seeds" data-secao="seeds">
+    <div class="section section-seeds">
         <h2>🌱 Editar / Adicionar Seeds</h2>
 
         <form method="POST" action="{{ url_for('update_seed') }}">
@@ -492,7 +487,7 @@
     </div>
 
     <!-- GEARS -->
-    <div class="section section-gears" data-secao="gears">
+    <div class="section section-gears">
         <h2>⚙️ Editar / Adicionar Gears</h2>
 
         <form method="POST" action="{{ url_for('update_gear') }}">
@@ -524,7 +519,7 @@
     </div>
 
     <!-- PETS -->
-    <div class="section section-pets" data-secao="pets">
+    <div class="section section-pets">
         <h2>🐾 Editar / Adicionar Pets</h2>
 
         <form method="POST" action="{{ url_for('update_pet') }}">
@@ -556,7 +551,7 @@
     </div>
 
     <!-- OFERTAS DO DIA -->
-    <div class="section section-ofertas" data-secao="ofertas">
+    <div class="section section-ofertas">
         <h2>🔥 Ofertas do Dia</h2>
         <p style="color:#aaa;font-size:13px;margin-bottom:15px;">
             Escolha um item já existente (de Pets, Seeds ou Gears) e defina um preço promocional.
@@ -629,58 +624,6 @@ if (categoriaSelect) {
         });
     });
 }
-
-// ------------------------------------------------------------------
-// NAVEGAÇÃO POR TABELA: clica numa linha, mostra só aquela seção.
-// Guarda a escolha em sessionStorage pra continuar na mesma seção
-// se a página recarregar (ex: depois de salvar um formulário).
-// ------------------------------------------------------------------
-(function () {
-    const linhas = document.querySelectorAll('#secoesNav tr[data-alvo]');
-    const secoes = document.querySelectorAll('#painelContainer .section[data-secao]');
-    const nav = document.getElementById('secoesNav');
-    const container = document.getElementById('painelContainer');
-
-    function abrirSecao(nomeAlvo) {
-        const existe = document.querySelector('.section[data-secao="' + nomeAlvo + '"]');
-        if (!existe) {
-            sessionStorage.removeItem('painelSecaoAtiva');
-            return;
-        }
-        secoes.forEach(sec => {
-            sec.classList.toggle('secao-ativa', sec.dataset.secao === nomeAlvo);
-        });
-        linhas.forEach(tr => {
-            tr.classList.toggle('linha-ativa', tr.dataset.alvo === nomeAlvo);
-        });
-        if (nomeAlvo) {
-            nav.classList.add('nav-recolhida');
-            container.classList.add('mostrando-secao');
-            sessionStorage.setItem('painelSecaoAtiva', nomeAlvo);
-            existe.scrollIntoView({ behavior: 'instant', block: 'start' });
-        }
-    }
-
-    function fecharSecao() {
-        secoes.forEach(sec => sec.classList.remove('secao-ativa'));
-        linhas.forEach(tr => tr.classList.remove('linha-ativa'));
-        nav.classList.remove('nav-recolhida');
-        container.classList.remove('mostrando-secao');
-        sessionStorage.removeItem('painelSecaoAtiva');
-        nav.scrollIntoView({ behavior: 'instant', block: 'start' });
-    }
-
-    linhas.forEach(tr => {
-        tr.addEventListener('click', () => abrirSecao(tr.dataset.alvo));
-    });
-
-    const btnVoltar = document.getElementById('btnVoltarSecoes');
-    if (btnVoltar) btnVoltar.addEventListener('click', fecharSecao);
-
-    // Reabre a mesma seção depois de salvar um formulário (POST recarrega a página)
-    const salva = sessionStorage.getItem('painelSecaoAtiva');
-    if (salva) abrirSecao(salva);
-})();
 </script>
 
 </body>

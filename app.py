@@ -117,7 +117,21 @@ TEMA_PADRAO = {
     "chat_accent": "#9dff00",
     "chat_msg_cliente_bg": "#252525",
     "chat_msg_vendedor_bg": "linear-gradient(180deg,#9dff00,#53c400)",
+
+    # Imagens de fundo por elemento (opcional — sobrepõe a cor sólida)
+    "card_pets_image": "",
+    "card_seeds_image": "",
+    "card_gears_image": "",
+    "card_trades_image": "",
+    "navbar_image": "",
+    "subpage_header_image": "",
 }
+
+# Campos de imagem (upload de arquivo, tratados separado dos campos de texto/cor)
+CAMPOS_IMAGEM = [
+    "card_pets_image", "card_seeds_image", "card_gears_image", "card_trades_image",
+    "navbar_image", "subpage_header_image",
+]
 
 # Campos que o formulário de tema pode salvar (usados em update_tema)
 CAMPOS_TEMA = [
@@ -240,7 +254,14 @@ def stock_unificado():
     pets = db.execute("SELECT * FROM pets ORDER BY id DESC").fetchall()
     seeds = db.execute("SELECT * FROM seeds ORDER BY id DESC").fetchall()
     gears = db.execute("SELECT * FROM gears ORDER BY id DESC").fetchall()
-    return render_template("Stock.html", pets=pets, seeds=seeds, gears=gears)
+
+    session_id = get_or_create_cart_session_id()
+    carrinho_qtd = db.execute(
+        "SELECT COALESCE(SUM(quantidade), 0) AS total FROM carrinho_itens WHERE session_id = ?",
+        (session_id,),
+    ).fetchone()["total"]
+
+    return render_template("Stock.html", pets=pets, seeds=seeds, gears=gears, carrinho_qtd=carrinho_qtd)
 
 
 @app.route("/sobre-nos")
@@ -698,11 +719,15 @@ def carrinho_adicionar():
     db = get_db()
     session_id = get_or_create_cart_session_id()
 
+    eh_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+
     categoria = request.form.get("categoria")
     item_id = request.form.get("item_id")
     quantidade = request.form.get("quantidade", "1")
 
     if categoria not in ("pets", "seeds", "gears"):
+        if eh_ajax:
+            return jsonify(ok=False, erro="Categoria inválida."), 400
         flash("Categoria inválida.")
         return redirect(request.referrer or url_for("index"))
 
@@ -710,11 +735,15 @@ def carrinho_adicionar():
         item_id = int(item_id)
         quantidade = max(1, int(quantidade))
     except (TypeError, ValueError):
+        if eh_ajax:
+            return jsonify(ok=False, erro="Item ou quantidade inválida."), 400
         flash("Item ou quantidade inválida.")
         return redirect(request.referrer or url_for("index"))
 
     produto = db.execute(f"SELECT * FROM {categoria} WHERE id = ?", (item_id,)).fetchone()
     if not produto:
+        if eh_ajax:
+            return jsonify(ok=False, erro="Item não encontrado."), 404
         flash("Item não encontrado.")
         return redirect(request.referrer or url_for("index"))
 
@@ -736,6 +765,10 @@ def carrinho_adicionar():
         )
 
     db.commit()
+
+    if eh_ajax:
+        return jsonify(ok=True, nome=produto["nome"])
+
     flash(f'"{produto["nome"]}" adicionado ao carrinho!')
     return redirect(request.referrer or url_for("carrinho"))
 
@@ -1159,23 +1192,42 @@ def update_tema():
         if campo in request.form:
             novo_tema[campo] = request.form.get(campo, tema_atual.get(campo, ""))
 
+    extensoes_permitidas = {"png", "jpg", "jpeg", "webp", "gif"}
+
+    def salvar_imagem(campo_arquivo):
+        """Faz upload de um arquivo de imagem e retorna o caminho salvo, ou None se não enviado."""
+        arquivo = request.files.get(campo_arquivo)
+        if not arquivo or not arquivo.filename:
+            return None
+        ext = arquivo.filename.rsplit(".", 1)[-1].lower() if "." in arquivo.filename else ""
+        if ext not in extensoes_permitidas:
+            flash(f"Formato de imagem não suportado em '{campo_arquivo}' (use png, jpg, jpeg, webp ou gif).")
+            return False
+        os.makedirs(THEME_UPLOAD_FOLDER, exist_ok=True)
+        nome_seguro = secure_filename(arquivo.filename)
+        nome_final = f"{campo_arquivo}_{secrets.token_hex(6)}_{nome_seguro}"
+        caminho_disco = os.path.join(THEME_UPLOAD_FOLDER, nome_final)
+        arquivo.save(caminho_disco)
+        return "/" + caminho_disco.replace("\\", "/")
+
+    # Imagem de fundo geral do site
     if request.form.get("remover_bg_image") == "1":
         novo_tema["bg_image"] = ""
+    resultado = salvar_imagem("bg_image")
+    if resultado is False:
+        return redirect(url_for("painel_adm"))
+    if resultado:
+        novo_tema["bg_image"] = resultado
 
-    arquivo = request.files.get("bg_image")
-    if arquivo and arquivo.filename:
-        extensoes_permitidas = {"png", "jpg", "jpeg", "webp", "gif"}
-        ext = arquivo.filename.rsplit(".", 1)[-1].lower() if "." in arquivo.filename else ""
-        if ext in extensoes_permitidas:
-            os.makedirs(THEME_UPLOAD_FOLDER, exist_ok=True)
-            nome_seguro = secure_filename(arquivo.filename)
-            nome_final = f"bg_{secrets.token_hex(6)}_{nome_seguro}"
-            caminho_disco = os.path.join(THEME_UPLOAD_FOLDER, nome_final)
-            arquivo.save(caminho_disco)
-            novo_tema["bg_image"] = "/" + caminho_disco.replace("\\", "/")
-        else:
-            flash("Formato de imagem não suportado (use png, jpg, jpeg, webp ou gif).")
+    # Imagens de fundo específicas (cards, navbar, cabeçalhos etc.)
+    for campo_img in CAMPOS_IMAGEM:
+        if request.form.get(f"remover_{campo_img}") == "1":
+            novo_tema[campo_img] = ""
+        resultado = salvar_imagem(campo_img)
+        if resultado is False:
             return redirect(url_for("painel_adm"))
+        if resultado:
+            novo_tema[campo_img] = resultado
 
     db.execute(
         "INSERT INTO configuracoes (chave, valor) VALUES ('tema_site', ?) "

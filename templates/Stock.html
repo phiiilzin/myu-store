@@ -12,7 +12,13 @@
 
 <header class="header">
     <div class="logo">🌱 MYU STORE</div>
-    <a href="{{ url_for('index') }}" class="back-btn">Voltar</a>
+    <div class="header-actions">
+        <a href="{{ url_for('carrinho') }}" class="cart-icon" id="cartIcon">
+            🛒
+            <span class="cart-badge {{ 'hidden' if not carrinho_qtd else '' }}" id="cartBadge">{{ carrinho_qtd }}</span>
+        </a>
+        <a href="{{ url_for('index') }}" class="back-btn">Voltar</a>
+    </div>
 </header>
 
 <section class="title">
@@ -39,17 +45,19 @@
     <div class="stock-container">
         {% for pet in pets %}
         <div class="stock-card pets">
-            {% if pet['emoji'] %}
-            <div style="font-size:80px;line-height:1;">{{ pet['emoji'] }}</div>
-            {% elif pet['imagem'] %}
-            <img src="{{ url_for('static', filename=pet['imagem']) }}" onerror="this.style.display='none'">
-            {% endif %}
+            <div class="item-visual">
+                {% if pet['emoji'] %}
+                <div style="font-size:80px;line-height:1;">{{ pet['emoji'] }}</div>
+                {% elif pet['imagem'] %}
+                <img src="{{ url_for('static', filename=pet['imagem']) }}" onerror="this.style.display='none'">
+                {% endif %}
+            </div>
             <div class="nome">{{ pet['nome'] }}</div>
             <div class="stock-qtd">Stock: {{ pet['stock'] }}</div>
             <div class="preco">R$ {{ "%.2f"|format(pet['preco']) }}</div>
 
             {% if pet['stock'] > 0 %}
-            <form method="POST" action="{{ url_for('carrinho_adicionar') }}">
+            <form method="POST" action="{{ url_for('carrinho_adicionar') }}" class="add-cart-form">
                 <input type="hidden" name="categoria" value="pets">
                 <input type="hidden" name="item_id" value="{{ pet['id'] }}">
                 <input type="hidden" name="quantidade" value="1">
@@ -70,17 +78,19 @@
     <div class="stock-container">
         {% for seed in seeds %}
         <div class="stock-card seeds">
-            {% if seed['emoji'] %}
-            <div style="font-size:80px;line-height:1;">{{ seed['emoji'] }}</div>
-            {% elif seed['imagem'] %}
-            <img src="{{ url_for('static', filename=seed['imagem']) }}" onerror="this.style.display='none'">
-            {% endif %}
+            <div class="item-visual">
+                {% if seed['emoji'] %}
+                <div style="font-size:80px;line-height:1;">{{ seed['emoji'] }}</div>
+                {% elif seed['imagem'] %}
+                <img src="{{ url_for('static', filename=seed['imagem']) }}" onerror="this.style.display='none'">
+                {% endif %}
+            </div>
             <div class="nome">{{ seed['nome'] }}</div>
             <div class="stock-qtd">Stock: {{ seed['stock'] }}</div>
             <div class="preco">R$ {{ "%.2f"|format(seed['preco']) }}</div>
 
             {% if seed['stock'] > 0 %}
-            <form method="POST" action="{{ url_for('carrinho_adicionar') }}">
+            <form method="POST" action="{{ url_for('carrinho_adicionar') }}" class="add-cart-form">
                 <input type="hidden" name="categoria" value="seeds">
                 <input type="hidden" name="item_id" value="{{ seed['id'] }}">
                 <input type="hidden" name="quantidade" value="1">
@@ -101,17 +111,19 @@
     <div class="stock-container">
         {% for gear in gears %}
         <div class="stock-card gears">
-            {% if gear['emoji'] %}
-            <div style="font-size:80px;line-height:1;">{{ gear['emoji'] }}</div>
-            {% elif gear['imagem'] %}
-            <img src="{{ url_for('static', filename=gear['imagem']) }}" onerror="this.style.display='none'">
-            {% endif %}
+            <div class="item-visual">
+                {% if gear['emoji'] %}
+                <div style="font-size:80px;line-height:1;">{{ gear['emoji'] }}</div>
+                {% elif gear['imagem'] %}
+                <img src="{{ url_for('static', filename=gear['imagem']) }}" onerror="this.style.display='none'">
+                {% endif %}
+            </div>
             <div class="nome">{{ gear['nome'] }}</div>
             <div class="stock-qtd">Stock: {{ gear['stock'] }}</div>
             <div class="preco">R$ {{ "%.2f"|format(gear['preco']) }}</div>
 
             {% if gear['stock'] > 0 %}
-            <form method="POST" action="{{ url_for('carrinho_adicionar') }}">
+            <form method="POST" action="{{ url_for('carrinho_adicionar') }}" class="add-cart-form">
                 <input type="hidden" name="categoria" value="gears">
                 <input type="hidden" name="item_id" value="{{ gear['id'] }}">
                 <input type="hidden" name="quantidade" value="1">
@@ -143,6 +155,98 @@ const hash = window.location.hash.replace('#', '');
 if (['pets', 'seeds', 'gears'].includes(hash)) {
     mostrarAba(hash);
 }
+
+// ===== ANIMAÇÃO DO ITEM VOANDO PRO CARRINHO =====
+
+let carrinhoQtd = parseInt(document.getElementById('cartBadge').textContent || '0', 10);
+
+function mostrarToast(texto) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = texto;
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 2200);
+}
+
+function atualizarBadgeCarrinho() {
+    carrinhoQtd += 1;
+    const badge = document.getElementById('cartBadge');
+    badge.textContent = carrinhoQtd;
+    badge.classList.remove('hidden');
+
+    const icon = document.getElementById('cartIcon');
+    icon.classList.remove('bump');
+    void icon.offsetWidth; // reinicia a animação se já tiver rodando
+    icon.classList.add('bump');
+}
+
+function voarParaCarrinho(card) {
+    const visual = card.querySelector('.item-visual');
+    const cartIcon = document.getElementById('cartIcon');
+    if (!visual || !cartIcon) return;
+
+    const origem = visual.getBoundingClientRect();
+    const destino = cartIcon.getBoundingClientRect();
+
+    const clone = document.createElement('div');
+    clone.className = 'fly-item';
+    clone.innerHTML = visual.innerHTML;
+    clone.style.top = origem.top + 'px';
+    clone.style.left = origem.left + 'px';
+    clone.style.width = origem.width + 'px';
+    clone.style.height = origem.height + 'px';
+    document.body.appendChild(clone);
+
+    // Força o navegador a registrar a posição inicial antes de animar
+    requestAnimationFrame(() => {
+        clone.style.top = (destino.top + destino.height / 2 - 10) + 'px';
+        clone.style.left = (destino.left + destino.width / 2 - 10) + 'px';
+        clone.style.width = '20px';
+        clone.style.height = '20px';
+        clone.style.opacity = '0';
+        clone.style.transform = 'rotate(25deg)';
+    });
+
+    setTimeout(() => {
+        clone.remove();
+        atualizarBadgeCarrinho();
+    }, 550);
+}
+
+document.querySelectorAll('.add-cart-form').forEach(form => {
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const card = form.closest('.stock-card');
+        const btn = form.querySelector('.buy-btn');
+        const nome = card.querySelector('.nome') ? card.querySelector('.nome').textContent : 'Item';
+
+        voarParaCarrinho(card);
+
+        btn.disabled = true;
+        const textoOriginal = btn.textContent;
+        btn.textContent = 'Adicionado ✓';
+
+        fetch(form.action, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: new FormData(form),
+        }).catch(() => {
+            // Se der erro de rede, ainda assim deixa o usuário tentar de novo
+        }).finally(() => {
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.textContent = textoOriginal;
+            }, 700);
+        });
+
+        mostrarToast(`"${nome}" adicionado ao carrinho!`);
+    });
+});
 </script>
 
 </body>

@@ -80,4 +80,24 @@
         background-attachment: fixed;
         {% endif %}
     }
+
+    /* Imagens de fundo específicas (opcional — sobrepõe a cor sólida do grupo) */
+    {% if tema.card_pets_image %}
+    .card-pets { background-image: linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)), url('{{ tema.card_pets_image }}'); background-size: cover; background-position: center; }
+    {% endif %}
+    {% if tema.card_seeds_image %}
+    .card-seeds { background-image: linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)), url('{{ tema.card_seeds_image }}'); background-size: cover; background-position: center; }
+    {% endif %}
+    {% if tema.card_gears_image %}
+    .card-gears { background-image: linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)), url('{{ tema.card_gears_image }}'); background-size: cover; background-position: center; }
+    {% endif %}
+    {% if tema.card_trades_image %}
+    .card-trades { background-image: linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)), url('{{ tema.card_trades_image }}'); background-size: cover; background-position: center; }
+    {% endif %}
+    {% if tema.navbar_image %}
+    .navbar { background-image: linear-gradient(rgba(0,0,0,.4), rgba(0,0,0,.4)), url('{{ tema.navbar_image }}'); background-size: cover; background-position: center; }
+    {% endif %}
+    {% if tema.subpage_header_image %}
+    .header { background-image: linear-gradient(rgba(0,0,0,.4), rgba(0,0,0,.4)), url('{{ tema.subpage_header_image }}'); background-size: cover; background-position: center; }
+    {% endif %}
 </style>

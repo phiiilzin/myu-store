@@ -55,106 +55,6 @@ body{
     flex-wrap:wrap;
 }
 
-/* ================================================
-   PEDIDOS: bloco fixo, sempre visível, no topo
-   ================================================ */
-.pedidos-fixo-wrap{
-    max-width:1200px;
-    margin:20px auto 0;
-    padding:0 16px;
-}
-
-.pedidos-fixo-wrap .section-pedidos{
-    box-shadow:0 0 30px rgba(157,255,0,.18);
-    border-width:2px;
-}
-
-.pedidos-badge{
-    display:inline-block;
-    min-width:22px;
-    padding:2px 8px;
-    margin-left:8px;
-    border-radius:20px;
-    background:#9dff00;
-    color:#0a0a0a;
-    font-size:13px;
-    font-weight:900;
-    text-align:center;
-    vertical-align:middle;
-}
-
-.edicao-titulo{
-    max-width:1200px;
-    margin:26px auto 0;
-    padding:0 16px;
-    color:#888;
-    font-size:14px;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:.5px;
-}
-
-/* ================================================
-   TABELA DE NAVEGAÇÃO DAS SEÇÕES
-   ================================================ */
-.secoes-nav-wrap{
-    max-width:1200px;
-    margin:10px auto 0;
-    padding:0 16px;
-}
-
-.secoes-nav{
-    width:100%;
-    border-collapse:collapse;
-    background:rgba(20,20,20,.95);
-    border:1px solid rgba(157,255,0,.15);
-    border-radius:16px;
-    overflow:hidden;
-}
-
-.secoes-nav tr{
-    cursor:pointer;
-    transition:.2s;
-    border-top:1px solid rgba(255,255,255,.06);
-}
-
-.secoes-nav tr:first-child{
-    border-top:none;
-}
-
-.secoes-nav tr:hover{
-    background:color-mix(in srgb, var(--sec-accent, #9dff00) 10%, transparent);
-}
-
-.secoes-nav tr.linha-ativa{
-    background:color-mix(in srgb, var(--sec-accent, #9dff00) 18%, transparent);
-}
-
-.secoes-nav td{
-    padding:14px 12px;
-    font-size:15px;
-}
-
-.secoes-nav td:first-child{
-    width:36px;
-    font-size:19px;
-    text-align:center;
-}
-
-.secoes-nav td.seta{
-    width:24px;
-    text-align:right;
-    color:var(--sec-accent, #9dff00);
-    font-size:20px;
-    font-weight:bold;
-}
-
-/* Quando uma seção está aberta, a tabela vira uma barrinha compacta lá em cima
-   (em vez de sumir, fica visível pra trocar de seção rapidamente) */
-.secoes-nav-wrap:has(+ .mostrando-secao) .secoes-nav tr:not(.linha-ativa){
-    display:none;
-}
-
 /* CONTAINER */
 .container{
     display:flex;
@@ -163,36 +63,6 @@ body{
     padding:16px;
     max-width:1200px;
     margin:auto;
-}
-
-/* Por padrão nenhuma seção aparece — só depois de clicar numa linha da tabela.
-   Sem JS (ou antes dele carregar), todas ficam visíveis pra não travar a página. */
-.container.mostrando-secao .section{
-    display:none;
-}
-.container.mostrando-secao .section.secao-ativa{
-    display:block;
-}
-
-.btn-voltar-secoes{
-    display:none;
-    width:auto;
-    height:38px;
-    padding:0 16px;
-    margin-bottom:4px;
-    background:transparent;
-    border:1px solid rgba(255,255,255,.2);
-    color:#ccc;
-    font-weight:700;
-    font-size:13px;
-}
-.btn-voltar-secoes:hover{
-    background:rgba(255,255,255,.08);
-    transform:none;
-    box-shadow:none;
-}
-.container.mostrando-secao .btn-voltar-secoes{
-    display:inline-block;
 }
 
 /* SECTIONS */
@@ -358,4 +228,11 @@ button:hover{
     .form-grid{
         grid-template-columns:repeat(4,1fr);
     }
+}
+
+.footer{
+    text-align:center;
+    padding:30px 16px;
+    color:var(--site-footer-text, #777);
+    font-size:13px;
 }

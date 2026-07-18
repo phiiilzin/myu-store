@@ -334,6 +334,6 @@ body{
 .footer{
     text-align:center;
     padding:24px;
-    color:#888;
+    color:var(--site-footer-text, #888);
     font-size:13px;
 }

@@ -238,7 +238,7 @@ body{
 .footer{
     text-align:center;
     padding:20px;
-    color:#d0d0d0;
+    color:var(--site-footer-text, #d0d0d0);
     font-size:13px;
 }
 
